@@ -42,6 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   Widget build(BuildContext context) {
     _loadSettings();
+    var currentTheme = settingsBloc.getThemeColor();
 
     return StreamBuilder<Settings>(
         stream: settingsBloc.settingsStream,
@@ -49,7 +50,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           return Scaffold(
             appBar: AppBar(
               title: const Text('Settings'),
-              backgroundColor: settingsBloc.getThemeColor(),
+              backgroundColor: currentTheme,
               elevation: 10,
             ),
             body: Padding(
@@ -60,7 +61,6 @@ class _SettingsScreenState extends State<SettingsScreen>
                   GestureDetector(
                     onTap: () {
                       showSettingsBottomSheet(context, ['English', 'Arabic']);
-                      setState(() {});
                     },
                     child: const Text(
                       'Change language',
@@ -72,7 +72,6 @@ class _SettingsScreenState extends State<SettingsScreen>
                     onTap: () {
                       showSettingsBottomSheet(
                           context, ['Red', 'Green', 'Blue']);
-                      setState(() {});
                     },
                     child: const Text(
                       'Change theme',
@@ -83,7 +82,6 @@ class _SettingsScreenState extends State<SettingsScreen>
                   GestureDetector(
                     onTap: () {
                       showCategoriesBottomSheet(context);
-                      setState(() {});
                     },
                     child: const Text(
                       'Categories',

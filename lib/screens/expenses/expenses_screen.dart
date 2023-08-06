@@ -85,12 +85,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
           backgroundColor: Colors.white,
           actions: [
             IconButton(
+                // onPressed: () {
+                //   Navigator.pushReplacement(
+                //     context,
+                //     MaterialPageRoute(builder: (context) => SettingsScreen()),
+                //   );
+
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsScreen()),
+                    MaterialPageRoute(builder: (context) => SettingsScreen()),
                   ).then((result) {
+                    bloc.settingsBox.get('settings');
                     setState(() {});
                   });
                 },
@@ -122,7 +128,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return ElevatedButton.icon(
-                              icon: const Icon(Icons.check),
+                              icon: Icon(Icons.check),
                               label: Text(
                                 categoryList[index],
                                 style: TextStyle(
