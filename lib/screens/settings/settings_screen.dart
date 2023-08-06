@@ -4,7 +4,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../locator.dart';
 import '../../mixins/bottom_sheet_settings_mixin.dart';
 import '../../models/settings.dart';
-import '../expenses/expenses_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -52,15 +51,6 @@ class _SettingsScreenState extends State<SettingsScreen>
               title: const Text('Settings'),
               backgroundColor: settingsBloc.getThemeColor(),
               elevation: 10,
-              leading: IconButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ExpensesScreen()),
-                    );
-                  },
-                  icon: const Icon(Icons.arrow_back_ios_new)),
             ),
             body: Padding(
               padding: const EdgeInsets.all(15.0),

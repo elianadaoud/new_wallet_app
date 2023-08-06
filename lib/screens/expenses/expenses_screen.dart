@@ -57,6 +57,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
     bloc.myExpenses = bloc.transactionsBox.values.toList();
 
     bloc.fillFilterdList();
+    var currentTheme = bloc.getThemeColor();
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -85,14 +86,17 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
           actions: [
             IconButton(
                 onPressed: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()),
-                  );
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsScreen()),
+                  ).then((result) {
+                    setState(() {});
+                  });
                 },
                 icon: Icon(
                   Icons.settings,
-                  color: bloc.getThemeColor(),
+                  color: currentTheme,
                 ))
           ],
         ),
@@ -104,7 +108,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Wallet(
-                    theme: bloc.getThemeColor(),
+                    theme: currentTheme,
                     income: bloc.calculateIncomeOutcome(TransactionType.income),
                     outcome:
                         bloc.calculateIncomeOutcome(TransactionType.outcome),
@@ -118,21 +122,20 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return ElevatedButton.icon(
-                              icon: Icon(Icons.check),
+                              icon: const Icon(Icons.check),
                               label: Text(
                                 categoryList[index],
                                 style: TextStyle(
                                   color: (bloc.selectedCategory ==
                                           categoryList[index]
                                       ? Colors.white
-                                      : bloc.getThemeColor()),
+                                      : currentTheme),
                                 ),
                               ),
                               style: ButtonStyle(
                                 backgroundColor: (bloc.selectedCategory ==
                                         categoryList[index]
-                                    ? MaterialStateProperty.all(
-                                        bloc.getThemeColor())
+                                    ? MaterialStateProperty.all(currentTheme)
                                     : MaterialStateProperty.all(Colors.white)),
                               ),
                               onPressed: () {
@@ -152,7 +155,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                     height: 60,
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(12),
-                                        color: bloc.getThemeColor()),
+                                        color: currentTheme),
                                     child: Row(
                                       children: [
                                         snapshot.data![index].type ==
@@ -238,8 +241,4 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
               );
             }));
   }
-
-  // void showBottomSheetMethod({required BuildContext ctx, required trans, required Null Function(dynamic value) onClicked}) {}
-
-  // void deleteAlert(int index, BuildContext context, ExpensesBloc bloc) {}
 }
