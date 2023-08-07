@@ -16,7 +16,6 @@ mixin BottomSheetSettings {
   var transactionsBox = locator<Box<Transactions>>();
 
   void updateCategories(List<String> updatedCategories) {
-    categories = updatedCategories;
     settingsBloc.categoriesStreamController.sink.add(updatedCategories);
   }
 
@@ -29,7 +28,7 @@ mixin BottomSheetSettings {
   }
 
   void addCategory() {
-    final String categoryName = _categoryController.text.trim();
+    final String categoryName = categoryController.text.trim();
     if (categoryName.isNotEmpty) {
       final List<String> categories = getCategories();
       categories.add(categoryName);
@@ -37,7 +36,7 @@ mixin BottomSheetSettings {
           boxName: 'settingsBox', key: 'categories', value: categories);
 
       updateCategories(categories);
-      _categoryController.clear();
+      categoryController.clear();
     }
   }
 
@@ -61,7 +60,8 @@ mixin BottomSheetSettings {
     }
   }
 
-  final TextEditingController _categoryController = TextEditingController();
+  final TextEditingController categoryController = TextEditingController();
+
   void showCategoriesBottomSheet(BuildContext context) {
     showModalBottomSheet<void>(
       context: context,
@@ -93,12 +93,15 @@ mixin BottomSheetSettings {
                   Padding(
                     padding: const EdgeInsets.all(25.0),
                     child: TextField(
-                      controller: _categoryController,
+                      controller: categoryController,
                       decoration: InputDecoration(
                         labelText: 'Add new category',
                         suffixIcon: IconButton(
                           icon: const Icon(Icons.add),
-                          onPressed: addCategory,
+                          onPressed: () {
+                            addCategory();
+                            Navigator.pop(context);
+                          },
                         ),
                       ),
                     ),

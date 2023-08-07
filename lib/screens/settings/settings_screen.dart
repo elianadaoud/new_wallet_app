@@ -23,8 +23,6 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _loadSettings() {
-    // Settings? settings = settingsBox.get('settingsKey');
-
     List<String> categoriess = locator<HiveService>()
             .getSettings(boxName: 'settingsBox', key: 'categories') ??
         ['All'];

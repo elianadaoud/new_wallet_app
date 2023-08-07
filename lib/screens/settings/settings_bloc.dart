@@ -7,7 +7,7 @@ import '../../locator.dart';
 
 class SettingsBloc {
   final StreamController<List<String>> categoriesStreamController =
-      StreamController<List<String>>();
+      StreamController<List<String>>.broadcast();
   Stream<List<String>> get categoriesStream =>
       categoriesStreamController.stream;
 

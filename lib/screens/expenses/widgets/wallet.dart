@@ -19,7 +19,7 @@ class Wallet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(15.0),
+        padding: const EdgeInsets.fromLTRB(8, 15, 8, 8),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
