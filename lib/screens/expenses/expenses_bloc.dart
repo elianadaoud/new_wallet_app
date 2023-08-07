@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../hive_db_service.dart';
 import '../../locator.dart';
-import '../../models/settings.dart';
+
 import '../../models/transactions.dart';
 
 class ExpensesBloc {
@@ -13,7 +14,6 @@ class ExpensesBloc {
   var transactionsBox = Hive.box<Transactions>('wallet_data');
 
   List<Transactions> myExpenses = [];
-  var settingsBox = locator<Box<Settings>>();
 
   double calculateIncomeOutcome(TransactionType type) {
     double totalMoney = 0;
@@ -35,9 +35,11 @@ class ExpensesBloc {
   List<Transactions> filteredList = [];
 
   fillCategoryList() {
-    final Settings settings = settingsBox.get('settingsKey') ??
-        Settings(categories: ['All'], language: 'English', theme: 'Blue');
-    List categoryList = settings.categories;
+    final List<String> categories = locator<HiveService>()
+            .getSettings(boxName: 'settingsBox', key: 'categories') ??
+        ['All'];
+
+    List<String> categoryList = categories;
     return categoryList;
   }
 
@@ -56,9 +58,9 @@ class ExpensesBloc {
   }
 
   Color getThemeColor() {
-    Settings settings = settingsBox.get('settingsKey') ??
-        Settings(categories: ['All'], language: 'English', theme: 'Red');
-    switch (settings.theme) {
+    var currentTheme = locator<HiveService>()
+        .getSettings(boxName: 'settingsBox', key: 'theme');
+    switch (currentTheme) {
       case 'Red':
         return Colors.red;
       case 'Green':

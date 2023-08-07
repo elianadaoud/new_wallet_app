@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+
 import 'package:new_app/screens/expenses/widgets/wallet.dart';
 
+import '../../hive_db_service.dart';
 import '../../locator.dart';
 import '../../mixins/methods_mixin.dart';
-import '../../models/settings.dart';
+
 import '../../models/transactions.dart';
 import '../settings/settings_screen.dart';
 import 'expenses_bloc.dart';
@@ -18,7 +19,6 @@ class ExpensesScreen extends StatefulWidget {
 
 class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
   ExpensesBloc bloc = ExpensesBloc();
-  var settingsBox = locator<Box<Settings>>();
 
   @override
   void initState() {
@@ -26,14 +26,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
     bloc.fillFilterdList();
 
-    settingsBox = locator<Box<Settings>>();
-    Settings? settings = settingsBox.get('settingsKey');
-    if (settings == null) {
-      settings =
-          Settings(categories: ['All'], language: 'English', theme: 'Red');
-
-      settingsBox.put('settingsKey', settings);
-    }
+    locator<HiveService>()
+        .setSettings(boxName: 'settingsBox', key: 'categories', value: ['All']);
+    locator<HiveService>()
+        .setSettings(boxName: 'settingsBox', key: 'language', value: 'English');
+    locator<HiveService>()
+        .setSettings(boxName: 'settingsBox', key: 'theme', value: 'Red');
 
     super.initState();
   }
@@ -52,7 +50,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
   @override
   Widget build(BuildContext context) {
-    List<String> categoryList = bloc.fillCategoryList();
+    List categoryList = bloc.fillCategoryList();
 
     bloc.myExpenses = bloc.transactionsBox.values.toList();
 
@@ -85,18 +83,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
           backgroundColor: Colors.white,
           actions: [
             IconButton(
-                // onPressed: () {
-                //   Navigator.pushReplacement(
-                //     context,
-                //     MaterialPageRoute(builder: (context) => SettingsScreen()),
-                //   );
-
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => SettingsScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsScreen()),
                   ).then((result) {
-                    bloc.settingsBox.get('settings');
                     setState(() {});
                   });
                 },
@@ -128,7 +120,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (BuildContext context, int index) {
                           return ElevatedButton.icon(
-                              icon: Icon(Icons.check),
+                              icon: const Icon(Icons.check),
                               label: Text(
                                 categoryList[index],
                                 style: TextStyle(

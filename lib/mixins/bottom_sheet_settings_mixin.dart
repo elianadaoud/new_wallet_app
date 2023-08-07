@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
+import '../hive_db_service.dart';
 import '../locator.dart';
-import '../models/settings.dart';
+
 import '../models/transactions.dart';
 import '../screens/settings/settings_bloc.dart';
 
@@ -11,39 +12,20 @@ mixin BottomSheetSettings {
   String language = 'English';
   String theme = 'Red';
   List<String> categories = ['All', 'Bills'];
-  var settingsBox = locator<Box<Settings>>();
-  var transactionsBox = locator<Box<Transactions>>();
-  void updateSettings() {
-    var updatedSettings =
-        Settings(categories: categories, language: language, theme: theme);
 
-    settingsBox.put('settingsKey', updatedSettings);
-    settingsBloc.settingsStreamController.sink.add(updatedSettings);
-    updatedSettings.save();
-  }
+  var transactionsBox = locator<Box<Transactions>>();
 
   void updateCategories(List<String> updatedCategories) {
     categories = updatedCategories;
     settingsBloc.categoriesStreamController.sink.add(updatedCategories);
-    updateSettings();
   }
 
-  void dispose() {
-    settingsBloc.categoriesStreamController.close();
-    settingsBloc.settingsStreamController.close();
-  }
+  List<String> getCategories<T>() {
+    List<String> categories = locator<HiveService>()
+            .getSettings(boxName: 'settingsBox', key: 'categories') ??
+        ['All'];
 
-  List<String> getCategories() {
-    final Settings? settings = settingsBox.get(
-      'settingsKey',
-    );
-
-    if (settings != null) {
-      settings.save();
-      return settings.categories;
-    } else {
-      return [];
-    }
+    return categories;
   }
 
   void addCategory() {
@@ -51,22 +33,25 @@ mixin BottomSheetSettings {
     if (categoryName.isNotEmpty) {
       final List<String> categories = getCategories();
       categories.add(categoryName);
-      settingsBox.put('settingsKey',
-          Settings(categories: categories, language: language, theme: theme));
+      locator<HiveService>().setSettings(
+          boxName: 'settingsBox', key: 'categories', value: categories);
 
       updateCategories(categories);
       _categoryController.clear();
     }
   }
 
-  deleteCategory(int index) {
-    final List<String> categories = getCategories();
+  deleteCategory(int index) async {
+    final List<String> categories = await locator<HiveService>().getSettings(
+      boxName: 'settingsBox',
+      key: 'categories',
+    );
     final categoryDelete = categories.removeAt(index);
-
     updateCategories(categories);
 
-    settingsBox.put('settingsKey',
-        Settings(categories: categories, language: language, theme: theme));
+    locator<HiveService>().setSettings(
+        boxName: 'settingsBox', key: 'categories', value: categories);
+
     final List<Transactions> transactionsToDelete = transactionsBox.values
         .where((transaction) => transaction.category == categoryDelete)
         .toList();
@@ -168,7 +153,23 @@ mixin BottomSheetSettings {
                   ),
                   TextButton(
                       onPressed: () {
-                        updateSettings();
+                        options.contains('English')
+                            ? {
+                                locator<HiveService>().setSettings(
+                                    boxName: 'settingsBox',
+                                    key: 'language',
+                                    value: language),
+                                settingsBloc.languageStreamController.sink
+                                    .add(language)
+                              }
+                            : {
+                                locator<HiveService>().setSettings(
+                                    boxName: 'settingsBox',
+                                    key: 'theme',
+                                    value: theme),
+                                settingsBloc.themeStreamController.sink
+                                    .add(theme)
+                              };
                         Navigator.pop(context);
                       },
                       child: const Text('Ok')),

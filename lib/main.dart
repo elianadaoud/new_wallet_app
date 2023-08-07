@@ -1,23 +1,25 @@
-import '/screens/expenses/expenses_screen.dart';
+import 'package:new_app/hive_db_service.dart';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'locator.dart';
-import 'models/settings.dart';
+
 import 'models/transactions.dart';
+import 'screens/expenses/expenses_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter(); // test
 
-  Hive.registerAdapter(TransactionsAdapter());
+  Hive.registerAdapter<Transactions>(TransactionsAdapter());
   Hive.registerAdapter<TransactionType>(TransactionTypeAdapter());
-  Hive.registerAdapter(SettingsAdapter());
-  await Hive.openBox<Transactions>('wallet_data');
 
-  await Hive.openBox<Settings>('settingsBox');
+  await Hive.openBox<Transactions>('wallet_data');
   setupLocator();
+  await locator<HiveService>().openBoxes();
+
   runApp(const MainApp());
 }
 

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:hive_flutter/hive_flutter.dart';
-
+import '../../../hive_db_service.dart';
 import '../../../locator.dart';
-import '../../../models/settings.dart';
 import '../../../models/transactions.dart';
 
 class BottomSheetWidget extends StatefulWidget {
@@ -25,15 +23,18 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   TransactionType type = TransactionType.income;
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descController = TextEditingController();
-  var settingsBox = locator<Box<Settings>>();
 
   bool isIncome = true;
   String? selectedCategory;
 
   List<String> fillCategoryList() {
-    final Settings settings = settingsBox.get('settingsKey') ??
-        Settings(categories: ['All'], language: 'English', theme: 'Blue');
-    List<String> categoryList = List.from(settings.categories);
+    List<String> categories = locator<HiveService>().getSettings(
+          boxName: 'settingsBox',
+          key: 'categories',
+        ) ??
+        ['All'];
+
+    List<String> categoryList = List.from(categories);
     categoryList.remove('All');
     return categoryList;
   }

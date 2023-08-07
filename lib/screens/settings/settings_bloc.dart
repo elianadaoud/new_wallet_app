@@ -1,26 +1,28 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../hive_db_service.dart';
 import '../../locator.dart';
-import '../../models/settings.dart';
 
 class SettingsBloc {
-  var settingsBox = locator<Box<Settings>>();
   final StreamController<List<String>> categoriesStreamController =
       StreamController<List<String>>();
   Stream<List<String>> get categoriesStream =>
       categoriesStreamController.stream;
 
-  final StreamController<Settings> settingsStreamController =
-      StreamController<Settings>.broadcast();
-  Stream<Settings> get settingsStream => settingsStreamController.stream;
+  final StreamController<String> languageStreamController =
+      StreamController<String>();
+  Stream<String> get languageStream => languageStreamController.stream;
+  final StreamController<String> themeStreamController =
+      StreamController<String>();
+  Stream<String> get themeStream => themeStreamController.stream;
 
   Color getThemeColor() {
-    Settings settings = settingsBox.get('settingsKey') ??
-        Settings(categories: ['All'], language: 'English', theme: 'Red');
-    switch (settings.theme) {
+    var currentTheme = locator<HiveService>()
+            .getSettings(boxName: 'settingsBox', key: 'theme') ??
+        'Red';
+    switch (currentTheme) {
       case 'Red':
         return Colors.red;
       case 'Green':

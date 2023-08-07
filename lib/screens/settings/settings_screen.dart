@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../hive_db_service.dart';
 import '../../locator.dart';
 import '../../mixins/bottom_sheet_settings_mixin.dart';
-import '../../models/settings.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,36 +16,38 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   void initState() {
     super.initState();
-    settingsBox = locator<Box<Settings>>();
-    settingsBox.get('settingsKey');
+    locator<HiveService>()
+        .getSettings(boxName: 'settingsBox', key: 'categories');
+    locator<HiveService>().getSettings(boxName: 'settingsBox', key: 'language');
+    locator<HiveService>().getSettings(boxName: 'settingsBox', key: 'theme');
   }
 
   void _loadSettings() {
-    Settings? settings = settingsBox.get('settingsKey');
-    if (settings == null || settings.theme.isEmpty) {
-      settings =
-          Settings(categories: ['All'], language: 'English', theme: 'Red');
+    // Settings? settings = settingsBox.get('settingsKey');
 
-      settingsBox.put('settingsKey', settings);
-      settings.save();
-    }
+    List<String> categoriess = locator<HiveService>()
+            .getSettings(boxName: 'settingsBox', key: 'categories') ??
+        ['All'];
+    var languages = locator<HiveService>()
+        .getSettings(boxName: 'settingsBox', key: 'language');
+    var themes = locator<HiveService>()
+        .getSettings(boxName: 'settingsBox', key: 'theme');
 
-    setState(() {
-      language = settings!.language;
-      theme = settings.theme;
-      categories = settings.categories;
-      settings.save();
-    });
+    language = languages;
+    theme = themes;
+    categories = categoriess;
+
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     _loadSettings();
-    var currentTheme = settingsBloc.getThemeColor();
 
-    return StreamBuilder<Settings>(
-        stream: settingsBloc.settingsStream,
+    return StreamBuilder<String>(
+        stream: settingsBloc.themeStream,
         builder: (context, snapshot) {
+          var currentTheme = settingsBloc.getThemeColor();
           return Scaffold(
             appBar: AppBar(
               title: const Text('Settings'),
