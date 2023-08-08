@@ -26,22 +26,22 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
     bloc.fillFilterdList();
 
-    List<String> cat = locator<HiveService>()
-            .getSettings(boxName: 'settingsBox', key: 'categories') ??
-        ['All'];
-    String them = locator<HiveService>()
-            .getSettings(boxName: 'settingsBox', key: 'theme') ??
-        'Red';
-    String lang = locator<HiveService>()
-            .getSettings(boxName: 'settingsBox', key: 'language') ??
-        'English';
+    // List<String> cat = locator<HiveService>()
+    //         .getSettings(boxName: 'settingsBox', key: 'categories') ??
+    //     ['All'];
+    // String them = locator<HiveService>()
+    //         .getSettings(boxName: 'settingsBox', key: 'theme') ??
+    //     'Red';
+    // String lang = locator<HiveService>()
+    //         .getSettings(boxName: 'settingsBox', key: 'language') ??
+    //     'English';
 
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'categories', value: cat);
+        .setSettings(boxName: 'settingsBox', key: 'categories', value: ['All']);
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'language', value: lang);
+        .setSettings(boxName: 'settingsBox', key: 'language', value: 'English');
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'theme', value: them);
+        .setSettings(boxName: 'settingsBox', key: 'theme', value: 'Red');
 
     super.initState();
   }

@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:new_app/hive_db_service.dart';
+import 'package:new_app/screens/login/firebase_service.dart';
 
 import 'models/transactions.dart';
 
@@ -11,4 +12,5 @@ void setupLocator() {
       Hive.box<Transactions>('wallet_data'));
 
   locator.registerLazySingleton(() => HiveService());
+  locator.registerLazySingleton(() => FirebaseService());
 }

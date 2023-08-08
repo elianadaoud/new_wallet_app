@@ -1,17 +1,24 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:new_app/screens/login/login_screen.dart';
 
+import 'firebase_options.dart';
 import 'locator.dart';
 
 import 'models/transactions.dart';
 import 'screens/expenses/expenses_screen.dart';
+import 'screens/login/signup_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Hive.initFlutter(); // test
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   Hive.registerAdapter<Transactions>(TransactionsAdapter());
   Hive.registerAdapter<TransactionType>(TransactionTypeAdapter());
@@ -30,7 +37,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ExpensesScreen(),
+      home: LoginScreen(),
     );
   }
 }

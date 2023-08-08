@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:new_app/screens/login/login_screen.dart';
 
 import '../../hive_db_service.dart';
 import '../../locator.dart';
@@ -51,6 +53,20 @@ class _SettingsScreenState extends State<SettingsScreen>
               title: const Text('Settings'),
               backgroundColor: currentTheme,
               elevation: 10,
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      FirebaseAuth.instance.signOut();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()));
+                    },
+                    child: const Text(
+                      'Logout',
+                      style: TextStyle(color: Colors.black),
+                    ))
+              ],
             ),
             body: Padding(
               padding: const EdgeInsets.all(15.0),
