@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import 'package:new_app/screens/expenses/widgets/wallet.dart';
 
@@ -7,6 +9,7 @@ import '../../locator.dart';
 import '../../mixins/methods_mixin.dart';
 
 import '../../models/transactions.dart';
+import '../login/firebase_service.dart';
 import '../settings/settings_screen.dart';
 import 'expenses_bloc.dart';
 
@@ -19,16 +22,14 @@ class ExpensesScreen extends StatefulWidget {
 
 class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
   ExpensesBloc bloc = ExpensesBloc();
+  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
 
   @override
   void initState() {
     bloc.myExpenses = bloc.transactionsBox.values.toList();
 
-    bloc.fillFilterdList();
+    bloc.fillFilterdList('All');
 
-    // List<String> cat = locator<HiveService>()
-    //         .getSettings(boxName: 'settingsBox', key: 'categories') ??
-    //     ['All'];
     // String them = locator<HiveService>()
     //         .getSettings(boxName: 'settingsBox', key: 'theme') ??
     //     'Red';
@@ -37,11 +38,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
     //     'English';
 
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'categories', value: ['All']);
-    locator<HiveService>()
         .setSettings(boxName: 'settingsBox', key: 'language', value: 'English');
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'theme', value: 'Red');
+        .setSettings(boxName: 'settingsBox', key: 'theme', value: 'theme');
 
     super.initState();
   }
@@ -60,12 +59,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
   @override
   Widget build(BuildContext context) {
-    List categoryList = bloc.fillCategoryList();
-
     bloc.myExpenses = bloc.transactionsBox.values.toList();
 
-    bloc.fillFilterdList();
+    bloc.fillFilterdList('All');
     var currentTheme = bloc.getThemeColor();
+    String selectedCategory = 'All';
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -80,7 +78,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                   bloc.transactionsBox.put(value.uniqueId, value);
                   bloc.myExpenses = bloc.transactionsBox.values.toList();
 
-                  bloc.fillFilterdList();
+                  bloc.fillFilterdList(selectedCategory);
                 });
           },
         ),
@@ -123,32 +121,58 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                   ),
                   SizedBox(
                     height: 50,
-                    child: ListView.builder(
-                        itemCount: categoryList.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ElevatedButton.icon(
-                              icon: const Icon(Icons.check),
-                              label: Text(
-                                categoryList[index],
-                                style: TextStyle(
-                                  color: (bloc.selectedCategory ==
-                                          categoryList[index]
-                                      ? Colors.white
-                                      : currentTheme),
-                                ),
-                              ),
-                              style: ButtonStyle(
-                                backgroundColor: (bloc.selectedCategory ==
-                                        categoryList[index]
-                                    ? MaterialStateProperty.all(currentTheme)
-                                    : MaterialStateProperty.all(Colors.white)),
-                              ),
-                              onPressed: () {
-                                bloc.selectedCategory = categoryList[index];
-                                bloc.fillFilterdList();
-                              });
+                    child: StreamBuilder(
+                        stream: _firebaseService.categories.snapshots(),
+                        builder: (context,
+                            AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+                          if (streamSnapshot.hasData) {
+                            return ListView.builder(
+                                itemCount: streamSnapshot.data!.docs.length,
+                                shrinkWrap: true,
+                                scrollDirection: Axis.horizontal,
+                                itemBuilder: (context, index) {
+                                  final DocumentSnapshot documentSnapshot =
+                                      streamSnapshot.data!.docs[index];
+
+                                  return ElevatedButton.icon(
+                                      icon: Icon(
+                                        IconData(documentSnapshot['icon'],
+                                            fontFamily: 'MaterialIcons'),
+                                        color: (selectedCategory ==
+                                                documentSnapshot['name']
+                                            ? Colors.white
+                                            : currentTheme),
+                                      ),
+                                      label: Text(
+                                        documentSnapshot['name'],
+                                        style: TextStyle(
+                                          color: (selectedCategory ==
+                                                  documentSnapshot['name']
+                                              ? Colors.white
+                                              : currentTheme),
+                                        ),
+                                      ),
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                          selectedCategory ==
+                                                  documentSnapshot['name']
+                                              ? currentTheme
+                                              : Colors.white,
+                                        ),
+                                      ),
+                                      onPressed: () {
+                                        selectedCategory =
+                                            documentSnapshot['name'];
+
+                                        bloc.fillFilterdList(selectedCategory);
+                                      });
+                                });
+                          } else {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
                         }),
                   ),
                   snapshot.data!.isNotEmpty
@@ -223,7 +247,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                                     }
                                                   }
 
-                                                  bloc.fillFilterdList();
+                                                  bloc.fillFilterdList(
+                                                      selectedCategory);
                                                 },
                                               );
                                             },

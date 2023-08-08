@@ -6,11 +6,6 @@ import '../../hive_db_service.dart';
 import '../../locator.dart';
 
 class SettingsBloc {
-  final StreamController<List<String>> categoriesStreamController =
-      StreamController<List<String>>.broadcast();
-  Stream<List<String>> get categoriesStream =>
-      categoriesStreamController.stream;
-
   final StreamController<String> languageStreamController =
       StreamController<String>();
   Stream<String> get languageStream => languageStreamController.stream;

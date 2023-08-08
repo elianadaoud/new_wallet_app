@@ -35,9 +35,9 @@ mixin WidgetsMixin {
 
                     bloc.myExpenses = bloc.transactionsBox.values.toList();
 
-                    bloc.fillFilterdList();
-
                     Navigator.pop(context);
+
+                    //bloc.fillFilterdList(bloc.myExpenses[index].category);
                   },
                   child: const Text(
                     'Confirm',

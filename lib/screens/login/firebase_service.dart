@@ -1,13 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get_it/get_it.dart';
 import 'package:new_app/screens/login/exception_handler.dart';
 
 class FirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseDatabase _database = FirebaseDatabase.instance;
+
+  final CollectionReference categories =
+      FirebaseFirestore.instance.collection('categories');
+// // document id
+//   List<String> docId = [];
+//   // get docID
+
+//   Future getdocId() async {
+//     _firestore
+//         .collection('categories')
+//         .get()
+//         .then((snapshot) => snapshot.docs.forEach((element) {
+//               print(element.reference);
+//             }));
+//   }
 
   void showToast(String message) {
     Fluttertoast.showToast(

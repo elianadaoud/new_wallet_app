@@ -3,14 +3,13 @@ import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:new_app/screens/expenses/expenses_screen.dart';
 import 'package:new_app/screens/login/login_screen.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
 
 import 'models/transactions.dart';
-import 'screens/expenses/expenses_screen.dart';
-import 'screens/login/signup_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,8 +35,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
-    );
+        debugShowCheckedModeBanner: false,
+        home: //LoginScreen(),
+            ExpensesScreen());
   }
 }

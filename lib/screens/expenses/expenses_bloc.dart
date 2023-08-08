@@ -30,20 +30,11 @@ class ExpensesBloc {
     return totalMoney;
   }
 
-  String selectedCategory = 'All';
+  //String selectedCategory = 'All';
 
   List<Transactions> filteredList = [];
 
-  fillCategoryList() {
-    final List<String> categories = locator<HiveService>()
-            .getSettings(boxName: 'settingsBox', key: 'categories') ??
-        ['All'];
-
-    List<String> categoryList = categories;
-    return categoryList;
-  }
-
-  fillFilterdList() {
+  fillFilterdList(String selectedCategory) {
     filteredList = [];
     myExpenses = transactionsBox.values.toList();
 
@@ -60,6 +51,7 @@ class ExpensesBloc {
   Color getThemeColor() {
     var currentTheme = locator<HiveService>()
         .getSettings(boxName: 'settingsBox', key: 'theme');
+
     switch (currentTheme) {
       case 'Red':
         return Colors.red;

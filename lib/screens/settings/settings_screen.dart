@@ -25,9 +25,6 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   void _loadSettings() {
-    List<String> categoriess = locator<HiveService>()
-            .getSettings(boxName: 'settingsBox', key: 'categories') ??
-        ['All'];
     var languages = locator<HiveService>()
         .getSettings(boxName: 'settingsBox', key: 'language');
     var themes = locator<HiveService>()
@@ -35,7 +32,6 @@ class _SettingsScreenState extends State<SettingsScreen>
 
     language = languages;
     theme = themes;
-    categories = categoriess;
 
     setState(() {});
   }
@@ -90,16 +86,6 @@ class _SettingsScreenState extends State<SettingsScreen>
                     },
                     child: const Text(
                       'Change theme',
-                      style: TextStyle(fontSize: 25),
-                    ),
-                  ),
-                  const Divider(),
-                  GestureDetector(
-                    onTap: () {
-                      showCategoriesBottomSheet(context);
-                    },
-                    child: const Text(
-                      'Categories',
                       style: TextStyle(fontSize: 25),
                     ),
                   ),
