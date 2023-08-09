@@ -6,61 +6,75 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:new_app/models/transactions.dart';
 import 'package:new_app/screens/login/exception_handler.dart';
 
+import '../../hive_db_service.dart';
+import '../../locator.dart';
+
 class FirebaseService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseStore = FirebaseFirestore.instance;
 
   final CollectionReference categories =
       FirebaseFirestore.instance.collection('categories');
-  deleteTransaction(String transactionId) async {
+  deleteTransaction(
+      {required String transactionId,
+      required String transactions,
+      required String userTransactions}) async {
     try {
       String userId = firebaseAuth.currentUser!.uid;
 
       DocumentReference transactionRef = firebaseStore
-          .collection('transactions')
+          .collection(transactions)
           .doc(userId)
-          .collection('user_transactions')
+          .collection(userTransactions)
           .doc(transactionId);
 
       await transactionRef.delete();
     } catch (e) {
-      print('Error deleting transaction: $e');
+      rethrow;
     }
   }
 
-  void updateTransaction(String transactionId, Transactions updatedData) async {
+  void updateTransaction(
+      {required String transactionId,
+      required Transactions updatedData,
+      required String transactions,
+      required String userTransactions}) async {
     String userId = firebaseAuth.currentUser!.uid;
 
     DocumentReference transactionRef = firebaseStore
-        .collection('transactions')
+        .collection(transactions)
         .doc(userId)
-        .collection('user_transactions')
+        .collection(userTransactions)
         .doc(transactionId);
 
     await transactionRef.update(updatedData.toJson());
   }
 
-  Future<void> addTransaction(Transactions transactionData) async {
+  Future<void> addTransaction(
+      {required Transactions transactionData,
+      required String transactions,
+      required String userTransactions}) async {
     String userId = firebaseAuth.currentUser!.uid;
 
-    DocumentReference userTransactions = firebaseStore
-        .collection('transactions')
+    DocumentReference userTransaction = firebaseStore
+        .collection(transactions)
         .doc(userId)
-        .collection('user_transactions')
+        .collection(userTransactions)
         .doc(transactionData.uniqueId);
 
-    await userTransactions.set(transactionData.toJson());
+    await userTransaction.set(transactionData.toJson());
   }
 
-  Stream<List<Transactions>> getUserTransactions() {
+  Stream<List<Transactions>> getUserTransactions(
+      {required String transactions, required String userTransactions}) {
     String userId = firebaseAuth.currentUser!.uid;
 
-    CollectionReference userTransactions = firebaseStore
-        .collection('transactions')
+    CollectionReference userTransaction = firebaseStore
+        .collection(transactions)
         .doc(userId)
-        .collection('user_transactions');
+        .collection(userTransactions);
 
-    return userTransactions.snapshots().map(
+    return userTransaction.snapshots().map(
           (querySnapshot) => querySnapshot.docs
               .map((doc) => Transactions.fromJson(
                   doc.data() as Map<String, dynamic>, doc.id))
@@ -70,6 +84,7 @@ class FirebaseService {
 
   void showToast(String message) {
     Fluttertoast.showToast(
+      timeInSecForIosWeb: 3,
       msg: message,
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
@@ -97,18 +112,22 @@ class FirebaseService {
     return firebaseAuth.signOut();
   }
 
+  bool? isLoggedIn() {
+    return locator<HiveService>()
+        .getSettings<bool>(boxName: 'settingsBox', key: 'isLoggedIn');
+  }
+
   Future<void> resetPassword(String email) async {
     try {
       await firebaseAuth.sendPasswordResetEmail(email: email);
       showToast('You should receive reset password email within seconds!');
     } catch (e) {
-      // Handle exceptions here
       if (e is FirebaseAuthException) {
         final errorMessage = AuthExceptionHandler.handleException(e);
-        print(errorMessage);
+
         showToast(AuthExceptionHandler.generateExceptionMessage(errorMessage));
       } else {
-        print('$e');
+        rethrow;
       }
     }
   }

@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+
 import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
+
 import 'screens/login/login_screen.dart';
 
 Future<void> main() async {
@@ -26,9 +28,13 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // final FirebaseService firebaseService = GetIt.I.get<FirebaseService>();
+
+    //  bool? valu = firebaseService.isLoggedIn();
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: // valu == null || valu ? const ExpensesScreen() :
+          LoginScreen(),
     );
   }
 }

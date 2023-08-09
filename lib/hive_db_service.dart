@@ -22,7 +22,7 @@ class HiveService {
   }) {
     switch (boxName) {
       case 'settingsBox':
-        return settingsBox.get(key) as T;
+        return settingsBox.get(key);
 
       default:
         return null;
