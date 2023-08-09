@@ -1,0 +1,15 @@
+{
+    "wallet-text":"Wallet",
+    "income-text":"Income",
+    "outcome-text":"Outcome",
+    "no-item-to-show-text":"No items to show!",
+    "account-balance-text":"Account balance",
+    "currency-jo-text":"JD",
+    "cancel-text":"Cancel",
+    "done-text":"Done",
+    "price-not-number-message-text":"Please add price as number",
+    "price-text":"Price..",
+    "desc-empty-message-text":"Please add description",
+    "desc-text":"Descriprtion.."
+    
+}
