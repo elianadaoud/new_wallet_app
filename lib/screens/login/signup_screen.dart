@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get_it/get_it.dart';
@@ -7,8 +6,6 @@ import '../expenses/expenses_screen.dart';
 import '../expenses/widgets/auth_widgets.dart';
 import 'exception_handler.dart';
 import 'firebase_service.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
