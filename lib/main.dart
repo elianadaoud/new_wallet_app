@@ -1,7 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 
-
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
@@ -9,6 +7,7 @@ import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:new_app/screens/expenses/widgets/hot_restart_controller.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
@@ -28,23 +27,61 @@ Future<void> main() async {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => MainAppState();
+  static MainAppState? of(BuildContext context) {
+    return context.findAncestorStateOfType<MainAppState>();
+  }
+}
+
+class MainAppState extends State<MainApp> {
+  String? locale;
+  @override
   Widget build(BuildContext context) {
+    LocalJsonLocalization.delegate.directories = ['lib/i18n'];
+    print("--------ahmad");
+    print("--------$locale");
 
     return MaterialApp(
+        locale: Locale(locale ?? "en"),
         localizationsDelegates: [
           // delegate from flutter_localization
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
+
           // delegate from localization package.
           LocalJsonLocalization.delegate,
         ],
+        supportedLocales: [Locale(locale ?? "en")],
         debugShowCheckedModeBanner: false,
-        home:  const LoginScreen());
+        home: const LoginScreen());
+  }
 
+  void rebuild() {
+    var appLanguage = locator<HiveService>().getSettings<String>(
+          boxName: 'settingsBox',
+          key: 'language',
+        ) ??
+        "English";
+    locale = getAppLocaleFromLanguage(appLanguage);
+    print(locale);
+    setState(() {});
+  }
+
+  String getAppLocaleFromLanguage(String appLanguage) {
+    switch (appLanguage) {
+      case "Arabic":
+        return "ar";
+      case "Russian":
+        return "ru";
+      case "English":
+        return "en";
+      default:
+        return "en";
+    }
   }
 }

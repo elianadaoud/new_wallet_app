@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 import 'package:pie_chart/pie_chart.dart';
 
 class Wallet extends StatelessWidget {
@@ -33,7 +34,7 @@ class Wallet extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Account balance ${income - outcome}JD',
+                  '${"account-balance-text".i18n()} ${income - outcome} ${"currency-jo-text".i18n()}',
                   style: const TextStyle(
                       fontSize: 10, fontWeight: FontWeight.bold),
                 ),
@@ -41,7 +42,7 @@ class Wallet extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      ' Income \n $income JD',
+                      ' ${"income-text".i18n()} \n $income ${"currency-jo-text".i18n()}',
                       style: const TextStyle(
                           fontSize: 10, fontWeight: FontWeight.bold),
                     ),
@@ -65,7 +66,7 @@ class Wallet extends StatelessWidget {
                         ),
                       ),
                     Text(
-                      ' Outcome \n $outcome JD',
+                      ' ${"outcome-text".i18n()} \n $outcome ${"currency-jo-text".i18n()}',
                       style: const TextStyle(
                           fontSize: 10, fontWeight: FontWeight.bold),
                     ),

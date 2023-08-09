@@ -9,12 +9,20 @@ Image logoWidget(String logoPath) {
   );
 }
 
-TextField reusableTextField(
+TextFormField reusableTextField(
     {required String text,
     required IconData icon,
     required bool isPassword,
+    GlobalKey<FormState>? key,
     required TextEditingController controller}) {
-  return TextField(
+  return TextFormField(
+    validator: (value) {
+      if (value == null) {
+        return "please enter a value";
+      } else {
+        return null;
+      }
+    },
     controller: controller,
     obscureText: isPassword,
     decoration: InputDecoration(

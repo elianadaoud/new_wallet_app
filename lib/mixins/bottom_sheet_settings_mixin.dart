@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../hive_db_service.dart';
 import '../locator.dart';
 
+import '../main.dart';
 import '../screens/settings/settings_bloc.dart';
 
 mixin BottomSheetSettings {
@@ -52,25 +53,24 @@ mixin BottomSheetSettings {
                     ),
                   ),
                   TextButton(
-                      onPressed: () {
-                        options.contains('English')
-                            ? {
-                                locator<HiveService>().setSettings(
-                                    boxName: 'settingsBox',
-                                    key: 'language',
-                                    value: language),
-                                settingsBloc.languageStreamController.sink
-                                    .add(language)
-                              }
-                            : {
-                                locator<HiveService>().setSettings(
-                                    boxName: 'settingsBox',
-                                    key: 'theme',
-                                    value: theme),
-                                settingsBloc.themeStreamController.sink
-                                    .add(theme)
-                              };
-                        Navigator.pop(context);
+                      onPressed: () async {
+                        if (options.contains('English')) {
+                          await locator<HiveService>().setSettings(
+                              boxName: 'settingsBox',
+                              key: 'language',
+                              value: language);
+                          settingsBloc.languageStreamController.sink
+                              .add(language);
+                          MainApp.of(context)?.rebuild();
+                        } else {
+                          locator<HiveService>().setSettings(
+                              boxName: 'settingsBox',
+                              key: 'theme',
+                              value: theme);
+                          settingsBloc.themeStreamController.sink.add(theme);
+                        }
+
+                        if (context.mounted) Navigator.pop(context);
                       },
                       child: const Text('Ok')),
                   const SizedBox(
