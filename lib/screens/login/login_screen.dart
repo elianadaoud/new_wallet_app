@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+
 import 'package:get_it/get_it.dart';
 import 'package:new_app/screens/expenses/expenses_screen.dart';
 import 'package:new_app/screens/login/forgot_password.dart';
 import 'package:new_app/screens/login/signup_screen.dart';
 
+import '../../hive_db_service.dart';
+import '../../locator.dart';
 import '../expenses/widgets/auth_widgets.dart';
 import 'exception_handler.dart';
 import 'firebase_service.dart';
@@ -23,31 +25,24 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void showToast(String message) {
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Colors.red,
-      textColor: Colors.white,
-    );
-  }
-
   void login() async {
     try {
-      await _firebaseService.signIn(
-          _emailController.text, _passwordController.text);
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ExpensesScreen()),
-      );
+      await _firebaseService
+          .signIn(_emailController.text, _passwordController.text)
+          .then((value) => {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ExpensesScreen()),
+                ),
+                locator<HiveService>().setSettings(
+                    boxName: 'settingsBox', key: 'isLoggedIn', value: true)
+              });
     } catch (e) {
-      print('Exception @login: $e');
-
       final errorMessage = AuthExceptionHandler.handleException(e);
 
-      showToast(AuthExceptionHandler.generateExceptionMessage(errorMessage));
+      _firebaseService.showToast(
+          AuthExceptionHandler.generateExceptionMessage(errorMessage));
     }
   }
 

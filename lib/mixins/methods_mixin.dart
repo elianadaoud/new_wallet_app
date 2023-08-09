@@ -24,11 +24,16 @@ mixin WidgetsMixin {
             actions: [
               TextButton(
                   onPressed: () async {
-                    await _firebaseService.deleteTransaction(docTrans);
+                    await _firebaseService.deleteTransaction(
+                        transactionId: docTrans,
+                        transactions: 'transactions',
+                        userTransactions: 'userTransactions');
 
                     bloc.myExpenses = bloc.filteredList;
 
-                    Navigator.pop(context);
+                    if (context.mounted) {
+                      Navigator.pop(context);
+                    }
                   },
                   child: const Text(
                     'Confirm',

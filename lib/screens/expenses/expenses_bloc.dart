@@ -36,7 +36,7 @@ class ExpensesBloc {
     CollectionReference userTransactions = _firebaseService.firebaseStore
         .collection('transactions')
         .doc(userId)
-        .collection('user_transactions');
+        .collection('userTransactions');
 
     if (selectedCategory == 'All') {
       userTransactions.snapshots().listen((snapshot) {

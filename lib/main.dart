@@ -1,6 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
+
+
+
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
+
 import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
@@ -8,6 +12,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
+
 import 'screens/login/login_screen.dart';
 
 Future<void> main() async {
@@ -28,6 +33,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
         localizationsDelegates: [
           // delegate from flutter_localization
@@ -38,8 +44,7 @@ class MainApp extends StatelessWidget {
           LocalJsonLocalization.delegate,
         ],
         debugShowCheckedModeBanner: false,
-        home: //LoginScreen(),
-            const ExpensesScreen());
+        home:  const LoginScreen());
 
   }
 }

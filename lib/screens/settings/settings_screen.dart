@@ -51,7 +51,11 @@ class _SettingsScreenState extends State<SettingsScreen>
               actions: [
                 TextButton(
                     onPressed: () {
-                      FirebaseAuth.instance.signOut();
+                      FirebaseAuth.instance.signOut().then((value) =>
+                          locator<HiveService>().setSettings(
+                              boxName: 'settingsBox',
+                              key: 'isLoggedIn',
+                              value: false));
                       Navigator.push(
                           context,
                           MaterialPageRoute(

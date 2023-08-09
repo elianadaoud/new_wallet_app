@@ -21,7 +21,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Signup'),
+        backgroundColor: Colors.black,
+        title: const Text('Reset password'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -38,7 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               const SizedBox(height: 24),
               authButton(
                 context: context,
-                type: 'Reset password',
+                type: 'Send reset password email',
                 onClicked: () async {
                   if (!formKey.currentState!.validate()) {
                     return;

@@ -24,21 +24,32 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
   ExpensesBloc bloc = ExpensesBloc();
   final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
 
+  Map<String, double> getCategoryOccurrences(List<Transactions> transactions) {
+    Map<String, double> dataMap = {};
+
+    for (Transactions transaction in transactions) {
+      String category = transaction.category;
+      dataMap[category] = (dataMap[category] ?? 0) + 1;
+    }
+
+    return dataMap;
+  }
+
   @override
   void initState() {
     bloc.fillFilterdList('All');
 
-    // String them = locator<HiveService>()
-    //         .getSettings(boxName: 'settingsBox', key: 'theme') ??
-    //     'Red';
-    // String lang = locator<HiveService>()
-    //         .getSettings(boxName: 'settingsBox', key: 'language') ??
-    //     'English';
+    String them = locator<HiveService>()
+            .getSettings(boxName: 'settingsBox', key: 'theme') ??
+        'Red';
+    String lang = locator<HiveService>()
+            .getSettings(boxName: 'settingsBox', key: 'language') ??
+        'English';
 
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'language', value: 'English');
+        .setSettings(boxName: 'settingsBox', key: 'language', value: lang);
     locator<HiveService>()
-        .setSettings(boxName: 'settingsBox', key: 'theme', value: 'theme');
+        .setSettings(boxName: 'settingsBox', key: 'theme', value: them);
 
     super.initState();
   }
@@ -59,11 +70,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 ctx: context,
                 trans: null,
                 onClicked: (value) {
-                  _firebaseService.addTransaction(Transactions(
-                      desc: value.desc,
-                      amount: value.amount,
-                      type: value.type,
-                      category: value.category));
+                  _firebaseService.addTransaction(
+                      transactionData: Transactions(
+                          desc: value.desc,
+                          amount: value.amount,
+                          type: value.type,
+                          category: value.category),
+                      transactions: 'transactions',
+                      userTransactions: 'userTransactions');
 
                   bloc.fillFilterdList(selectedCategory);
                 });
@@ -106,7 +120,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                           bloc.calculateIncomeOutcome('Income', snapshot.data!),
                       outcome: bloc.calculateIncomeOutcome(
                           'Outcome', snapshot.data!),
-                      // pieMap: getCategoryOccurrences(bloc.myExpenses),
+                      pieMap: getCategoryOccurrences(snapshot.data!),
                     ),
                     SizedBox(
                       height: 50,
@@ -221,10 +235,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                                   onClicked: (value) async {
                                                     _firebaseService
                                                         .updateTransaction(
-                                                            snapshot
-                                                                .data![index]
-                                                                .doc!,
-                                                            value);
+                                                            transactionId:
+                                                                snapshot
+                                                                    .data![
+                                                                        index]
+                                                                    .doc!,
+                                                            updatedData: value,
+                                                            transactions:
+                                                                'transactions',
+                                                            userTransactions:
+                                                                'userTransactions');
 
                                                     bloc.fillFilterdList(
                                                         selectedCategory);
