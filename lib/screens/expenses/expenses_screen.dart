@@ -26,7 +26,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
   @override
   void initState() {
-    bloc.myExpenses = bloc.transactionsBox.values.toList();
+    //  bloc.myExpenses = bloc.transactionsBox.values.toList();
 
     bloc.fillFilterdList('All');
 
@@ -45,21 +45,21 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
     super.initState();
   }
 
-  Map<String, double> getCategoryOccurrences(List<Transactions> transactions) {
-    final List<Transactions> myExpenses = bloc.transactionsBox.values.toList();
-    Map<String, double> dataMap = {};
+  // Map<String, double> getCategoryOccurrences(List<Transactions> transactions) {
+  //   final List<Transactions> myExpenses = bloc.transactionsBox.values.toList();
+  //   Map<String, double> dataMap = {};
 
-    for (Transactions transaction in myExpenses) {
-      String category = transaction.category;
-      dataMap[category] = (dataMap[category] ?? 0) + 1;
-    }
+  //   for (Transactions transaction in myExpenses) {
+  //     String category = transaction.category;
+  //     dataMap[category] = (dataMap[category] ?? 0) + 1;
+  //   }
 
-    return dataMap;
-  }
+  //   return dataMap;
+  // }
 
   @override
   Widget build(BuildContext context) {
-    bloc.myExpenses = bloc.transactionsBox.values.toList();
+    // bloc.myExpenses = bloc.transactionsBox.values.toList();
 
     bloc.fillFilterdList('All');
     var currentTheme = bloc.getThemeColor();
@@ -75,8 +75,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 ctx: context,
                 trans: null,
                 onClicked: (value) {
-                  bloc.transactionsBox.put(value.uniqueId, value);
-                  bloc.myExpenses = bloc.transactionsBox.values.toList();
+                  // bloc.transactionsBox.put(value.uniqueId, value);
+                  _firebaseService.addTransaction(Transactions(
+                      desc: value.desc,
+                      amount: value.amount,
+                      type: value.type,
+                      category: value.category));
+
+                  //bloc.myExpenses = bloc.transactionsBox.values.toList();
+                  // bloc.myExpenses= _firebaseService.getUserTransactions();
 
                   bloc.fillFilterdList(selectedCategory);
                 });
@@ -109,25 +116,26 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
             initialData: const [],
             stream: bloc.filteredListController.stream,
             builder: (context, snapshot) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Wallet(
-                    theme: currentTheme,
-                    income: bloc.calculateIncomeOutcome(TransactionType.income),
-                    outcome:
-                        bloc.calculateIncomeOutcome(TransactionType.outcome),
-                    pieMap: getCategoryOccurrences(bloc.myExpenses),
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: StreamBuilder(
-                        stream: _firebaseService.categories.snapshots(),
-                        builder: (context,
-                            AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                          if (streamSnapshot.hasData) {
+              if (snapshot.hasData) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Wallet(
+                      theme: currentTheme,
+                      income:
+                          bloc.calculateIncomeOutcome('Income', snapshot.data!),
+                      outcome: bloc.calculateIncomeOutcome(
+                          'Outcome', snapshot.data!),
+                      // pieMap: getCategoryOccurrences(bloc.myExpenses),
+                    ),
+                    SizedBox(
+                      height: 50,
+                      child: StreamBuilder(
+                          stream: _firebaseService.categories.snapshots(),
+                          builder: (context,
+                              AsyncSnapshot<QuerySnapshot> streamSnapshot) {
                             return ListView.builder(
-                                itemCount: streamSnapshot.data!.docs.length,
+                                itemCount: streamSnapshot.data?.docs.length,
                                 shrinkWrap: true,
                                 scrollDirection: Axis.horizontal,
                                 itemBuilder: (context, index) {
@@ -168,109 +176,101 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                         bloc.fillFilterdList(selectedCategory);
                                       });
                                 });
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        }),
-                  ),
-                  snapshot.data!.isNotEmpty
-                      ? Flexible(
-                          child: ListView.builder(
-                              itemCount: bloc.filteredList.length,
-                              itemBuilder: (context, index) {
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: 60,
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: currentTheme),
-                                    child: Row(
-                                      children: [
-                                        snapshot.data![index].type ==
-                                                TransactionType.outcome
-                                            ? const Icon(Icons.arrow_upward)
-                                            : const Icon(Icons.arrow_downward),
-                                        snapshot.data![index].type ==
-                                                TransactionType.income
-                                            ? Text(
-                                                'Income ${snapshot.data![index].price}')
-                                            : Text(
-                                                'Outcome ${snapshot.data![index].price}'),
-                                        const SizedBox(width: 25),
-                                        Expanded(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                textAlign: TextAlign.center,
-                                                snapshot.data![index].category,
-                                                softWrap: true,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              Text(
-                                                textAlign: TextAlign.center,
-                                                snapshot.data![index].desc,
-                                                softWrap: true,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                            ],
+                          }),
+                    ),
+                    snapshot.data!.isNotEmpty
+                        ? Flexible(
+                            child: ListView.builder(
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: currentTheme),
+                                      child: Row(
+                                        children: [
+                                          snapshot.data![index].type ==
+                                                  'Outcome'
+                                              ? const Icon(Icons.arrow_upward)
+                                              : const Icon(
+                                                  Icons.arrow_downward),
+                                          snapshot.data![index].type == 'Income'
+                                              ? Text(
+                                                  'Income ${snapshot.data![index].amount}')
+                                              : Text(
+                                                  'Outcome ${snapshot.data![index].amount}'),
+                                          const SizedBox(width: 25),
+                                          Expanded(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Text(
+                                                  textAlign: TextAlign.center,
+                                                  snapshot
+                                                      .data![index].category,
+                                                  softWrap: true,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                                Text(
+                                                  textAlign: TextAlign.center,
+                                                  snapshot.data![index].desc,
+                                                  softWrap: true,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        IconButton(
-                                            iconSize: 15,
-                                            onPressed: () {
-                                              showBottomSheetMethod(
-                                                ctx: context,
-                                                trans: bloc.myExpenses[index],
-                                                onClicked: (value) {
-                                                  for (int i = 0;
-                                                      i <
-                                                          bloc.myExpenses
-                                                              .length;
-                                                      i++) {
-                                                    if (bloc.myExpenses[i]
-                                                            .uniqueId ==
-                                                        snapshot.data![index]
-                                                            .uniqueId) {
-                                                      bloc.myExpenses[i]
-                                                          .delete();
-                                                      bloc.transactionsBox.put(
-                                                          bloc.myExpenses[i]
-                                                              .uniqueId,
-                                                          value);
+                                          IconButton(
+                                              iconSize: 15,
+                                              onPressed: () {
+                                                showBottomSheetMethod(
+                                                  ctx: context,
+                                                  trans: snapshot.data![index],
+                                                  onClicked: (value) async {
+                                                    _firebaseService
+                                                        .updateTransaction(
+                                                            snapshot
+                                                                .data![index]
+                                                                .doc!,
+                                                            value);
 
-                                                      value.save();
-                                                    }
-                                                  }
-
-                                                  bloc.fillFilterdList(
-                                                      selectedCategory);
-                                                },
-                                              );
-                                            },
-                                            icon: const Icon(Icons.edit)),
-                                        IconButton(
-                                            iconSize: 15,
-                                            onPressed: () {
-                                              deleteAlert(index, context, bloc);
-                                            },
-                                            icon: const Icon(Icons.delete))
-                                      ],
+                                                    bloc.fillFilterdList(
+                                                        selectedCategory);
+                                                  },
+                                                );
+                                              },
+                                              icon: const Icon(Icons.edit)),
+                                          IconButton(
+                                              iconSize: 15,
+                                              onPressed: () {
+                                                deleteAlert(
+                                                    snapshot.data![index].doc!,
+                                                    context,
+                                                    bloc);
+                                              },
+                                              icon: const Icon(Icons.delete))
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                );
-                              }),
-                        )
-                      : const Padding(
-                          padding: EdgeInsets.all(90.0),
-                          child: Text('No items to show!'),
-                        ),
-                ],
-              );
+                                  );
+                                }),
+                          )
+                        : const Padding(
+                            padding: EdgeInsets.all(90.0),
+                            child: Text('No items to show!'),
+                          ),
+                  ],
+                );
+              } else {
+                return CircularProgressIndicator();
+              }
             }));
   }
 }

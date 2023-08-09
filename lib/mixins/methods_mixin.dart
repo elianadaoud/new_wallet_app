@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../models/transactions.dart';
 import '../screens/expenses/expenses_bloc.dart';
 import '../screens/expenses/widgets/bottom_sheet_widget.dart';
+import '../screens/login/firebase_service.dart';
 
 mixin WidgetsMixin {
-  deleteAlert(int index, BuildContext context, ExpensesBloc bloc) {
+  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+  deleteAlert(var docTrans, BuildContext context, ExpensesBloc bloc) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -20,20 +23,12 @@ mixin WidgetsMixin {
             ),
             actions: [
               TextButton(
-                  onPressed: () {
-                    bloc.myExpenses = bloc.transactionsBox.values.toList();
+                  onPressed: () async {
+                    print('transaction id  $docTrans');
 
-                    for (int i = 0; i < bloc.myExpenses.length; i++) {
-                      if (bloc.myExpenses[i].uniqueId ==
-                          bloc.filteredList[index].uniqueId) {
-                        bloc.myExpenses[i].delete();
+                    await _firebaseService.deleteTransaction(docTrans);
 
-                        bloc.transactionsBox
-                            .delete(bloc.myExpenses[i].uniqueId);
-                      }
-                    }
-
-                    bloc.myExpenses = bloc.transactionsBox.values.toList();
+                    bloc.myExpenses = bloc.filteredList;
 
                     Navigator.pop(context);
 

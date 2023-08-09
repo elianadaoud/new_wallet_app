@@ -4,12 +4,9 @@ import 'package:new_app/hive_db_service.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:new_app/screens/expenses/expenses_screen.dart';
-import 'package:new_app/screens/login/login_screen.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
-
-import 'models/transactions.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,11 +15,6 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  Hive.registerAdapter<Transactions>(TransactionsAdapter());
-  Hive.registerAdapter<TransactionType>(TransactionTypeAdapter());
-
-  await Hive.openBox<Transactions>('wallet_data');
   setupLocator();
   await locator<HiveService>().openBoxes();
 

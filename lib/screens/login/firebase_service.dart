@@ -3,25 +3,72 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:new_app/models/transactions.dart';
 import 'package:new_app/screens/login/exception_handler.dart';
 
 class FirebaseService {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  final FirebaseFirestore firebaseStore = FirebaseFirestore.instance;
 
   final CollectionReference categories =
       FirebaseFirestore.instance.collection('categories');
-// // document id
-//   List<String> docId = [];
-//   // get docID
+  deleteTransaction(String transactionId) async {
+    try {
+      String userId = firebaseAuth.currentUser!.uid;
 
-//   Future getdocId() async {
-//     _firestore
-//         .collection('categories')
-//         .get()
-//         .then((snapshot) => snapshot.docs.forEach((element) {
-//               print(element.reference);
-//             }));
-//   }
+      DocumentReference transactionRef = firebaseStore
+          .collection('transactions')
+          .doc(userId)
+          .collection('user_transactions')
+          .doc(transactionId);
+
+      await transactionRef.delete();
+    } catch (e) {
+      print('Error deleting transaction: $e');
+    }
+  }
+
+  void updateTransaction(String transactionId, Transactions updatedData) async {
+    String userId = firebaseAuth.currentUser!.uid;
+    print("Userid  $userId");
+    print("transactionId  $transactionId");
+
+    DocumentReference transactionRef = firebaseStore
+        .collection('transactions')
+        .doc(userId)
+        .collection('user_transactions')
+        .doc(transactionId);
+
+    await transactionRef.update(updatedData.toJson());
+  }
+
+  Future<void> addTransaction(Transactions transactionData) async {
+    String userId = firebaseAuth.currentUser!.uid;
+
+    DocumentReference userTransactions = firebaseStore
+        .collection('transactions')
+        .doc(userId)
+        .collection('user_transactions')
+        .doc(transactionData.uniqueId);
+
+    await userTransactions.set(transactionData.toJson());
+  }
+
+  Stream<List<Transactions>> getUserTransactions() {
+    String userId = firebaseAuth.currentUser!.uid;
+
+    CollectionReference userTransactions = firebaseStore
+        .collection('transactions')
+        .doc(userId)
+        .collection('user_transactions');
+
+    return userTransactions.snapshots().map(
+          (querySnapshot) => querySnapshot.docs
+              .map((doc) => Transactions.fromJson(
+                  doc.data() as Map<String, dynamic>, doc.id))
+              .toList(),
+        );
+  }
 
   void showToast(String message) {
     Fluttertoast.showToast(
@@ -34,7 +81,7 @@ class FirebaseService {
   }
 
   Future<String> signIn(String email, String password) async {
-    final result = await _firebaseAuth.signInWithEmailAndPassword(
+    final result = await firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
     final user = result.user;
     print(user);
@@ -43,19 +90,19 @@ class FirebaseService {
   }
 
   Future<String> signUp(String email, String password) async {
-    final result = await _firebaseAuth.createUserWithEmailAndPassword(
+    final result = await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     final user = result.user;
     return user!.uid;
   }
 
   Future<void> signOut() async {
-    return _firebaseAuth.signOut();
+    return firebaseAuth.signOut();
   }
 
   Future<void> resetPassword(String email) async {
     try {
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      await firebaseAuth.sendPasswordResetEmail(email: email);
       showToast('You should receive reset password email within seconds!');
     } catch (e) {
       // Handle exceptions here

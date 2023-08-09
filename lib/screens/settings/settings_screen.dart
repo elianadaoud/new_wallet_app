@@ -18,8 +18,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   void initState() {
     super.initState();
-    locator<HiveService>()
-        .getSettings(boxName: 'settingsBox', key: 'categories');
+
     locator<HiveService>().getSettings(boxName: 'settingsBox', key: 'language');
     locator<HiveService>().getSettings(boxName: 'settingsBox', key: 'theme');
   }

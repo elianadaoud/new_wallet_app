@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 
 import '../hive_db_service.dart';
 import '../locator.dart';
 
-import '../models/transactions.dart';
 import '../screens/settings/settings_bloc.dart';
 
 mixin BottomSheetSettings {
   SettingsBloc settingsBloc = SettingsBloc();
   String language = 'English';
   String theme = 'Red';
-
-  var transactionsBox = locator<Box<Transactions>>();
 
   void showSettingsBottomSheet(BuildContext context, List<String> options) {
     showModalBottomSheet<void>(

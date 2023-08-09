@@ -19,7 +19,7 @@ class BottomSheetWidget extends StatefulWidget {
 
 class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   final formKey = GlobalKey<FormState>();
-  TransactionType type = TransactionType.income;
+  String type = 'Income';
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descController = TextEditingController();
 
@@ -43,10 +43,10 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
     fetchCategoryData();
 
     if (widget.trans != null) {
-      priceController.text = widget.trans!.price.toString();
+      priceController.text = widget.trans!.amount.toString();
       descController.text = widget.trans!.desc;
       type = widget.trans!.type;
-      isIncome = type == TransactionType.income ? true : false;
+      isIncome = type == 'Income' ? true : false;
       selectedCategory = widget.trans!.category;
     }
 
@@ -107,7 +107,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                             } else {
                               final newTransaction = Transactions(
                                 desc: descController.text,
-                                price: double.parse(priceController.text),
+                                amount: double.parse(priceController.text),
                                 type: type,
                                 category:
                                     selectedCategory ?? categoryNames.first,
@@ -177,7 +177,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                     onChanged: (context) {
                       setState(() {
                         isIncome = true;
-                        type = TransactionType.income;
+                        type = 'Income';
                       });
                     },
                   ),
@@ -189,7 +189,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                     onChanged: (context) {
                       setState(() {
                         isIncome = false;
-                        type = TransactionType.outcome;
+                        type = 'Outcome';
                       });
                     },
                   ),
