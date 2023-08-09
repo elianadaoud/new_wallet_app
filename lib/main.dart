@@ -1,4 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:localization/localization.dart';
 import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
@@ -10,7 +12,7 @@ import 'locator.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  LocalJsonLocalization.delegate.directories = ['lib/i18n'];
   await Hive.initFlutter(); // test
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -26,9 +28,17 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
+        localizationsDelegates: [
+          // delegate from flutter_localization
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          // delegate from localization package.
+          LocalJsonLocalization.delegate,
+        ],
         debugShowCheckedModeBanner: false,
         home: //LoginScreen(),
-            ExpensesScreen());
+            const ExpensesScreen());
   }
 }

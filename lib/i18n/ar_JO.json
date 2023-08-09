@@ -1,0 +1,15 @@
+{
+    "wallet-text":"المحفظة",
+    "income-text":"مدخلات",
+    "outcome-text":"مخرجات",
+    "no-item-to-show-text":"لا توجد عناصر للعرض",
+    "account-balance-text":"رصيد الحساب",
+    "currency-jo-text":"دينار",
+    "cancel-text":"إلغاء",
+    "done-text":"تم",
+    "price-not-number-message-text":"الرجاء اضافة رقم",
+    "price-text":"المبلغ..",
+    "desc-empty-message-text":"الرجاء اضافة الوصف",
+    "desc-text":"الوصف.."
+    
+}
