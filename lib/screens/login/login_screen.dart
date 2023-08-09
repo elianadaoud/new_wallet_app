@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:get_it/get_it.dart';
@@ -24,6 +26,14 @@ class _LoginScreenState extends State<LoginScreen> {
   final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final StreamController<bool> passStreamController = StreamController<bool>();
+  final formkey = GlobalKey<FormState>();
+
+  bool isPasswordVisable = false;
+  void togglePasswordVisibility() {
+    isPasswordVisable = !isPasswordVisable;
+    passStreamController.sink.add(isPasswordVisable);
+  }
 
   void login() async {
     try {
@@ -49,64 +59,74 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        logoWidget('assets/logo.png'),
-        Padding(
-            padding: const EdgeInsets.all(10),
-            child: reusableTextField(
-                controller: _emailController,
-                text: 'Email',
-                isPassword: false,
-                icon: Icons.email)),
-        Padding(
-            padding: const EdgeInsets.all(10),
-            child: reusableTextField(
-                controller: _passwordController,
-                text: 'Password',
-                isPassword: true,
-                icon: Icons.lock)),
-        authButton(
-          context: context,
-          type: 'Login',
-          onClicked: () {
-            login();
-          },
+        body: Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            logoWidget('assets/logo.png'),
+            Padding(
+                padding: const EdgeInsets.all(10),
+                child: Form(
+                  child: reusableTextField(
+                      controller: _emailController,
+                      text: 'Email',
+                      isPassword: false,
+                      icon: Icons.email),
+                )),
+            Padding(
+                padding: const EdgeInsets.all(10),
+                child: StreamBuilder<bool>(
+                    stream: passStreamController.stream,
+                    builder: (context, snapshot) {
+                      return reusableTextField(
+                          controller: _passwordController,
+                          text: 'Password',
+                          isPassword: true,
+                          icon: Icons.lock);
+                    })),
+            authButton(
+              context: context,
+              type: 'Login',
+              onClicked: () {
+                login();
+              },
+            ),
+            const SizedBox(
+              height: 40,
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ForgotPasswordScreen()));
+              },
+              child: const Text(
+                'Forgot Password?',
+                style: TextStyle(color: Colors.black, fontSize: 15),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SignupScreen()),
+                ).then((result) {
+                  setState(() {});
+                });
+              },
+              child: const Text(
+                'New User? Register',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    decoration: TextDecoration.underline),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(
-          height: 40,
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => const ForgotPasswordScreen()));
-          },
-          child: const Text(
-            'Forgot Password?',
-            style: TextStyle(color: Colors.black, fontSize: 15),
-          ),
-        ),
-        TextButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const SignupScreen()),
-            ).then((result) {
-              setState(() {});
-            });
-          },
-          child: const Text(
-            'New User? Register',
-            style: TextStyle(
-                color: Colors.black,
-                fontSize: 15,
-                decoration: TextDecoration.underline),
-          ),
-        ),
-      ],
+      ),
     ));
   }
 }

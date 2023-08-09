@@ -74,7 +74,8 @@ class _SettingsScreenState extends State<SettingsScreen>
                 children: [
                   GestureDetector(
                     onTap: () {
-                      showSettingsBottomSheet(context, ['English', 'Arabic']);
+                      showSettingsBottomSheet(
+                          context, ['English', 'Arabic', 'Russian']);
                     },
                     child: const Text(
                       'Change language',
