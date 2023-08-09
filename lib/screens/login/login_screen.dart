@@ -64,7 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            logoWidget('assets/logo.png'),
+            logoWidget('assets/wallet_icon.png'),
+            const SizedBox(
+              height: 20,
+            ),
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: Form(
@@ -83,8 +86,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         obscureText: !isPasswordVisable,
                         decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20)),
                             labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock),
                             hintText: 'Enter secure password',
                             suffix: InkWell(
                               onTap: () {

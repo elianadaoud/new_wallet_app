@@ -7,7 +7,6 @@ import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:new_app/screens/expenses/widgets/hot_restart_controller.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
