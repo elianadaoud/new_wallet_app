@@ -48,8 +48,7 @@ class Wallet extends StatelessWidget {
                     if (pieMap != null && pieMap!.isNotEmpty)
                       Expanded(
                         child: Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 8.0), // Adjust the values as needed
+                          padding: const EdgeInsets.only(bottom: 8.0),
                           child: PieChart(
                             chartLegendSpacing: 10,
                             chartType: ChartType.disc,

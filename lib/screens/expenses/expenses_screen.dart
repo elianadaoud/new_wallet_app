@@ -26,8 +26,6 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
   @override
   void initState() {
-    //  bloc.myExpenses = bloc.transactionsBox.values.toList();
-
     bloc.fillFilterdList('All');
 
     // String them = locator<HiveService>()
@@ -45,22 +43,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
     super.initState();
   }
 
-  // Map<String, double> getCategoryOccurrences(List<Transactions> transactions) {
-  //   final List<Transactions> myExpenses = bloc.transactionsBox.values.toList();
-  //   Map<String, double> dataMap = {};
-
-  //   for (Transactions transaction in myExpenses) {
-  //     String category = transaction.category;
-  //     dataMap[category] = (dataMap[category] ?? 0) + 1;
-  //   }
-
-  //   return dataMap;
-  // }
-
   @override
   Widget build(BuildContext context) {
-    // bloc.myExpenses = bloc.transactionsBox.values.toList();
-
     bloc.fillFilterdList('All');
     var currentTheme = bloc.getThemeColor();
     String selectedCategory = 'All';
@@ -75,15 +59,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 ctx: context,
                 trans: null,
                 onClicked: (value) {
-                  // bloc.transactionsBox.put(value.uniqueId, value);
                   _firebaseService.addTransaction(Transactions(
                       desc: value.desc,
                       amount: value.amount,
                       type: value.type,
                       category: value.category));
-
-                  //bloc.myExpenses = bloc.transactionsBox.values.toList();
-                  // bloc.myExpenses= _firebaseService.getUserTransactions();
 
                   bloc.fillFilterdList(selectedCategory);
                 });
@@ -134,48 +114,53 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                           stream: _firebaseService.categories.snapshots(),
                           builder: (context,
                               AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                            return ListView.builder(
-                                itemCount: streamSnapshot.data?.docs.length,
-                                shrinkWrap: true,
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) {
-                                  final DocumentSnapshot documentSnapshot =
-                                      streamSnapshot.data!.docs[index];
+                            if (streamSnapshot.hasData) {
+                              return ListView.builder(
+                                  itemCount: streamSnapshot.data?.docs.length,
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, index) {
+                                    final DocumentSnapshot documentSnapshot =
+                                        streamSnapshot.data!.docs[index];
 
-                                  return ElevatedButton.icon(
-                                      icon: Icon(
-                                        IconData(documentSnapshot['icon'],
-                                            fontFamily: 'MaterialIcons'),
-                                        color: (selectedCategory ==
-                                                documentSnapshot['name']
-                                            ? Colors.white
-                                            : currentTheme),
-                                      ),
-                                      label: Text(
-                                        documentSnapshot['name'],
-                                        style: TextStyle(
+                                    return ElevatedButton.icon(
+                                        icon: Icon(
+                                          IconData(documentSnapshot['icon'],
+                                              fontFamily: 'MaterialIcons'),
                                           color: (selectedCategory ==
                                                   documentSnapshot['name']
                                               ? Colors.white
                                               : currentTheme),
                                         ),
-                                      ),
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all(
-                                          selectedCategory ==
-                                                  documentSnapshot['name']
-                                              ? currentTheme
-                                              : Colors.white,
+                                        label: Text(
+                                          documentSnapshot['name'],
+                                          style: TextStyle(
+                                            color: (selectedCategory ==
+                                                    documentSnapshot['name']
+                                                ? Colors.white
+                                                : currentTheme),
+                                          ),
                                         ),
-                                      ),
-                                      onPressed: () {
-                                        selectedCategory =
-                                            documentSnapshot['name'];
+                                        style: ButtonStyle(
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                            selectedCategory ==
+                                                    documentSnapshot['name']
+                                                ? currentTheme
+                                                : Colors.white,
+                                          ),
+                                        ),
+                                        onPressed: () {
+                                          selectedCategory =
+                                              documentSnapshot['name'];
 
-                                        bloc.fillFilterdList(selectedCategory);
-                                      });
-                                });
+                                          bloc.fillFilterdList(
+                                              selectedCategory);
+                                        });
+                                  });
+                            } else {
+                              return const CircularProgressIndicator();
+                            }
                           }),
                     ),
                     snapshot.data!.isNotEmpty
@@ -269,7 +254,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                   ],
                 );
               } else {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
             }));
   }

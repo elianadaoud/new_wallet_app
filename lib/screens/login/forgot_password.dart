@@ -1,11 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../expenses/widgets/auth_widgets.dart';
 import 'firebase_service.dart';
-
-final FirebaseAuth _auth = FirebaseAuth.instance;
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -47,10 +44,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                     return;
                   } else {
                     _firebaseService.resetPassword(_emailController.text);
-                    // Perform signup logic here
-                    String email = _emailController.text;
-
-                    print('Signup: Email: $email');
                   }
                 },
               )
