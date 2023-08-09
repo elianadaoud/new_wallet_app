@@ -7,7 +7,6 @@ import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:new_app/screens/expenses/widgets/hot_restart_controller.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
@@ -42,8 +41,6 @@ class MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     LocalJsonLocalization.delegate.directories = ['lib/i18n'];
-    print("--------ahmad");
-    print("--------$locale");
 
     return MaterialApp(
         locale: Locale(locale ?? "en"),
@@ -68,7 +65,6 @@ class MainAppState extends State<MainApp> {
         ) ??
         "English";
     locale = getAppLocaleFromLanguage(appLanguage);
-    print(locale);
     setState(() {});
   }
 

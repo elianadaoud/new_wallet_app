@@ -4,8 +4,8 @@ Image logoWidget(String logoPath) {
   return Image.asset(
     logoPath,
     fit: BoxFit.fitWidth,
-    height: 240,
-    width: 240,
+    height: 175,
+    width: 175,
   );
 }
 

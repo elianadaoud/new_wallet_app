@@ -64,7 +64,10 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            logoWidget('assets/logo.png'),
+            logoWidget('assets/wallet_icon.png'),
+            const SizedBox(
+              height: 20,
+            ),
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: Form(
@@ -79,11 +82,24 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: StreamBuilder<bool>(
                     stream: passStreamController.stream,
                     builder: (context, snapshot) {
-                      return reusableTextField(
-                          controller: _passwordController,
-                          text: 'Password',
-                          isPassword: true,
-                          icon: Icons.lock);
+                      return TextFormField(
+                        controller: _passwordController,
+                        obscureText: !isPasswordVisable,
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(20)),
+                            labelText: 'Password',
+                            prefixIcon: const Icon(Icons.lock),
+                            hintText: 'Enter secure password',
+                            suffix: InkWell(
+                              onTap: () {
+                                togglePasswordVisibility();
+                              },
+                              child: Text(
+                                isPasswordVisable ? "Hide" : "show",
+                              ),
+                            )),
+                      );
                     })),
             authButton(
               context: context,

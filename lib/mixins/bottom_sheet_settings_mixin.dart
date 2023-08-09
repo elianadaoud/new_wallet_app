@@ -61,7 +61,7 @@ mixin BottomSheetSettings {
                               value: language);
                           settingsBloc.languageStreamController.sink
                               .add(language);
-                          MainApp.of(context)?.rebuild();
+                          if (context.mounted) MainApp.of(context)?.rebuild();
                         } else {
                           locator<HiveService>().setSettings(
                               boxName: 'settingsBox',
