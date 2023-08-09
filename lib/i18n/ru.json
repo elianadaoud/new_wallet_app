@@ -1,0 +1,15 @@
+{
+    "wallet-text":"Кошелек",
+    "income-text":"Доход",
+    "outcome-text":"Результат",
+    "no-item-to-show-text":"Нет элементов для отображения!",
+    "account-balance-text":"Баланс счета",
+    "currency-jo-text":"JD",
+    "cancel-text":"Отмена",
+    "done-text":"Готово",
+    "price-not-number-message-text":"Пожалуйста, добавьте цену как число",
+    "price-text":"Цена..",
+    "desc-empty-message-text":"Пожалуйста, добавьте описание",
+    "desc-text":"Описание.."
+    
+}
