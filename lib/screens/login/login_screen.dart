@@ -79,11 +79,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: StreamBuilder<bool>(
                     stream: passStreamController.stream,
                     builder: (context, snapshot) {
-                      return reusableTextField(
-                          controller: _passwordController,
-                          text: 'Password',
-                          isPassword: true,
-                          icon: Icons.lock);
+                      return TextFormField(
+                        controller: _passwordController,
+                        obscureText: !isPasswordVisable,
+                        decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            labelText: 'Password',
+                            hintText: 'Enter secure password',
+                            suffix: InkWell(
+                              onTap: () {
+                                togglePasswordVisibility();
+                              },
+                              child: Text(
+                                isPasswordVisable ? "Hide" : "show",
+                              ),
+                            )),
+                      );
                     })),
             authButton(
               context: context,

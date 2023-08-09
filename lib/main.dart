@@ -42,8 +42,6 @@ class MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     LocalJsonLocalization.delegate.directories = ['lib/i18n'];
-    print("--------ahmad");
-    print("--------$locale");
 
     return MaterialApp(
         locale: Locale(locale ?? "en"),
@@ -68,7 +66,6 @@ class MainAppState extends State<MainApp> {
         ) ??
         "English";
     locale = getAppLocaleFromLanguage(appLanguage);
-    print(locale);
     setState(() {});
   }
 
