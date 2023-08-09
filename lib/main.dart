@@ -5,10 +5,10 @@ import 'package:new_app/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:new_app/screens/expenses/expenses_screen.dart';
 
 import 'firebase_options.dart';
 import 'locator.dart';
+import 'screens/login/login_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,5 +40,6 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: //LoginScreen(),
             const ExpensesScreen());
+
   }
 }

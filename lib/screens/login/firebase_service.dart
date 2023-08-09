@@ -30,8 +30,6 @@ class FirebaseService {
 
   void updateTransaction(String transactionId, Transactions updatedData) async {
     String userId = firebaseAuth.currentUser!.uid;
-    print("Userid  $userId");
-    print("transactionId  $transactionId");
 
     DocumentReference transactionRef = firebaseStore
         .collection('transactions')
@@ -84,8 +82,7 @@ class FirebaseService {
     final result = await firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
     final user = result.user;
-    print(user);
-    print('$result=======');
+
     return user!.uid;
   }
 
@@ -111,7 +108,6 @@ class FirebaseService {
         print(errorMessage);
         showToast(AuthExceptionHandler.generateExceptionMessage(errorMessage));
       } else {
-        print('General Exception:');
         print('$e');
       }
     }

@@ -28,24 +28,7 @@ class ExpensesBloc {
     return totalMoney;
   }
 
-  //String selectedCategory = 'All';
-
   List<Transactions> filteredList = [];
-
-  // void fillFilterdList(String selectedCategory) {
-  //   if (selectedCategory == 'All') {
-  //     _firebaseService.getUserTransactions().listen((userTransactions) {
-  //       filteredListController.sink.add(userTransactions);
-  //     });
-  //   } else {
-  //     _firebaseService.getUserTransactions().listen((userTransactions) {
-  //       List<Transactions> filteredList = userTransactions
-  //           .where((transaction) => transaction.category == selectedCategory)
-  //           .toList();
-  //       filteredListController.sink.add(filteredList);
-  //     });
-  //   }
-  // }
 
   void fillFilterdList(String selectedCategory) {
     String userId = _firebaseService.firebaseAuth.currentUser!.uid;
