@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 
 import '../../../models/transactions.dart';
 
@@ -48,6 +49,8 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
       type = widget.trans!.type;
       isIncome = type == 'Income' ? true : false;
       selectedCategory = widget.trans!.category;
+    } else {
+      selectedCategory = null;
     }
 
     super.initState();
@@ -85,21 +88,23 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                     children: [
                       TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text(
-                            'Cancel',
-                            style: TextStyle(color: Colors.teal),
+                          child: Text(
+                            "cancel-text".i18n(),
+                            style: const TextStyle(color: Colors.teal),
                           )),
                       Text(
-                        widget.trans == null ? 'Add' : 'Edit',
+                        widget.trans == null
+                            ? "add-text".i18n()
+                            : "edit-text".i18n(),
                         style: const TextStyle(
                             color: Colors.teal,
                             fontWeight: FontWeight.bold,
                             fontSize: 18),
                       ),
                       TextButton(
-                          child: const Text(
-                            'Done',
-                            style: TextStyle(color: Colors.teal),
+                          child: Text(
+                            "done-text".i18n(),
+                            style: const TextStyle(color: Colors.teal),
                           ),
                           onPressed: () {
                             if (!formKey.currentState!.validate()) {
@@ -125,8 +130,9 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                   ),
                   const Divider(),
                   DropdownButton(
-                    value: selectedCategory ?? categoryNames.first,
+                    value: selectedCategory,
                     items: dropdownItems,
+                    hint: Text("select-text".i18n()),
                     onChanged: (newValue) {
                       setState(() {
                         selectedCategory = newValue!;
@@ -138,16 +144,16 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                     validator: (value) {
                       if ((value?.isEmpty ?? true) ||
                           double.parse(value!) <= 0.0) {
-                        return 'Please add price as number';
+                        return "price-not-number-message-text".i18n();
                       } else {
                         return null;
                       }
                     },
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        labelText: 'Price..',
-                        prefixIcon: Icon(Icons.price_check),
-                        border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        labelText: "price-text".i18n(),
+                        prefixIcon: const Icon(Icons.price_check),
+                        border: const OutlineInputBorder()),
                   ),
                   const SizedBox(
                     height: 12,
@@ -160,18 +166,18 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                       if (value!.isNotEmpty && value.length > 2) {
                         return null;
                       } else {
-                        return 'Please add description';
+                        return "desc-empty-message-text".i18n();
                       }
                     },
-                    decoration: const InputDecoration(
-                        labelText: 'Descriprtion..',
-                        prefixIcon: Icon(Icons.money),
-                        border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        labelText: "desc-text".i18n(),
+                        prefixIcon: const Icon(Icons.money),
+                        border: const OutlineInputBorder()),
                     controller: descController,
                   ),
                   RadioListTile(
                     activeColor: Colors.teal,
-                    title: const Text('Income'),
+                    title: Text("income-text".i18n()),
                     value: true,
                     groupValue: isIncome,
                     onChanged: (context) {
@@ -183,7 +189,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                   ),
                   RadioListTile(
                     activeColor: Colors.teal,
-                    title: const Text('Outcome'),
+                    title: Text("outcome-text".i18n()),
                     value: false,
                     groupValue: isIncome,
                     onChanged: (context) {

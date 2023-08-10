@@ -6,9 +6,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:new_app/models/transactions.dart';
 import 'package:new_app/screens/login/exception_handler.dart';
 
-import '../../hive_db_service.dart';
-import '../../locator.dart';
-
 class FirebaseService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseStore = FirebaseFirestore.instance;
@@ -110,11 +107,6 @@ class FirebaseService {
 
   Future<void> signOut() async {
     return firebaseAuth.signOut();
-  }
-
-  bool? isLoggedIn() {
-    return locator<HiveService>()
-        .getSettings<bool>(boxName: 'settingsBox', key: 'isLoggedIn');
   }
 
   Future<void> resetPassword(String email) async {

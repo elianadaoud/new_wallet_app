@@ -7,8 +7,6 @@ import 'package:new_app/screens/expenses/expenses_screen.dart';
 import 'package:new_app/screens/login/forgot_password.dart';
 import 'package:new_app/screens/login/signup_screen.dart';
 
-import '../../hive_db_service.dart';
-import '../../locator.dart';
 import '../expenses/widgets/auth_widgets.dart';
 import 'exception_handler.dart';
 import 'firebase_service.dart';
@@ -45,8 +43,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   MaterialPageRoute(
                       builder: (context) => const ExpensesScreen()),
                 ),
-                locator<HiveService>().setSettings(
-                    boxName: 'settingsBox', key: 'isLoggedIn', value: true)
               });
     } catch (e) {
       final errorMessage = AuthExceptionHandler.handleException(e);

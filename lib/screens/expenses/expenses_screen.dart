@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:localization/localization.dart';
 
 import 'package:new_app/screens/expenses/widgets/wallet.dart';
 
@@ -84,9 +85,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
           },
         ),
         appBar: AppBar(
-          title: const Text(
-            'Wallet',
-            style: TextStyle(color: Colors.black),
+          title: Text(
+            "wallet-text".i18n(),
+            style: const TextStyle(color: Colors.black),
           ),
           backgroundColor: Colors.white,
           actions: [
@@ -267,9 +268,9 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                   );
                                 }),
                           )
-                        : const Padding(
-                            padding: EdgeInsets.all(90.0),
-                            child: Text('No items to show!'),
+                        : Padding(
+                            padding: const EdgeInsets.all(90.0),
+                            child: Text("no-item-to-show-text".i18n()),
                           ),
                   ],
                 );
