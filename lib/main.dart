@@ -16,7 +16,7 @@ import 'screens/login/login_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   LocalJsonLocalization.delegate.directories = ['lib/i18n'];
-  await Hive.initFlutter(); // test
+  await Hive.initFlutter();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -45,12 +45,9 @@ class MainAppState extends State<MainApp> {
     return MaterialApp(
         locale: Locale(locale ?? "en"),
         localizationsDelegates: [
-          // delegate from flutter_localization
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
-
-          // delegate from localization package.
           LocalJsonLocalization.delegate,
         ],
         supportedLocales: [Locale(locale ?? "en")],

@@ -10,6 +10,8 @@
     "price-not-number-message-text":"Пожалуйста, добавьте цену как число",
     "price-text":"Цена..",
     "desc-empty-message-text":"Пожалуйста, добавьте описание",
-    "desc-text":"Описание.."
-    
+    "desc-text":"Описание..",
+    "add-text":"Добавлять",
+    "edit-text":"Редактировать",
+    "select-text":"Выберите элемент"
 }

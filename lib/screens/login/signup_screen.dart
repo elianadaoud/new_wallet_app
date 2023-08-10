@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:get_it/get_it.dart';
 
-import '../../hive_db_service.dart';
-import '../../locator.dart';
 import '../expenses/expenses_screen.dart';
 import '../expenses/widgets/auth_widgets.dart';
 import 'exception_handler.dart';
@@ -32,9 +30,6 @@ class _SignupScreenState extends State<SignupScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const ExpensesScreen()),
               ));
-
-      locator<HiveService>()
-          .setSettings(boxName: 'settingsBox', key: 'isLoggedIn', value: true);
     } catch (e) {
       final errorMessage = AuthExceptionHandler.handleException(e);
 

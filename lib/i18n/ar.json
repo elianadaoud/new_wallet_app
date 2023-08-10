@@ -10,6 +10,9 @@
     "price-not-number-message-text":"الرجاء اضافة رقم",
     "price-text":"المبلغ..",
     "desc-empty-message-text":"الرجاء اضافة الوصف",
-    "desc-text":"الوصف.."
+    "desc-text":"الوصف..",
+    "add-text":"إضافة",
+    "edit-text":"تعديل",
+    "select-text":"حدد عنصرًا"
     
 }

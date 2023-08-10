@@ -10,6 +10,9 @@
     "price-not-number-message-text":"Please add price as number",
     "price-text":"Price..",
     "desc-empty-message-text":"Please add description",
-    "desc-text":"Descriprtion.."
+    "desc-text":"Descriprtion..",
+    "add-text":"Add",
+    "edit-text":"Edit",
+    "select-text":"Select item"
     
 }
