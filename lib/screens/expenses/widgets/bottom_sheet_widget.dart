@@ -59,7 +59,6 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   @override
   Widget build(BuildContext context) {
     List categoryNames = categoryData.map((data) => data['name']).toList();
-    categoryNames.remove('All');
 
     List<DropdownMenuItem> dropdownItems = categoryNames.map((category) {
       return DropdownMenuItem(

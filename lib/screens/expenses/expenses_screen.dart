@@ -125,64 +125,106 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                       pieMap:
                           getCategoryOccurrences(transactionsSnapshot.data!),
                     ),
-                    SizedBox(
-                      height: 50,
-                      child: StreamBuilder(
-                          stream: _firebaseService.categories.snapshots(),
-                          builder: (context,
-                              AsyncSnapshot<QuerySnapshot>
-                                  categoryStreamSnapshot) {
-                            if (categoryStreamSnapshot.hasData) {
-                              return ListView.builder(
-                                  itemCount:
-                                      categoryStreamSnapshot.data?.docs.length,
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) {
-                                    final DocumentSnapshot documentSnapshot =
-                                        categoryStreamSnapshot
-                                            .data!.docs[index];
-
-                                    return ElevatedButton.icon(
-                                        icon: Icon(
-                                          IconData(documentSnapshot['icon'],
-                                              fontFamily: 'MaterialIcons'),
-                                          color: (selectedCategory ==
-                                                  documentSnapshot['name']
+                    StreamBuilder(
+                        stream: _firebaseService.categories.snapshots(),
+                        builder: (context,
+                            AsyncSnapshot<QuerySnapshot>
+                                categoryStreamSnapshot) {
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: <Widget>[
+                                SizedBox(
+                                  height: 50,
+                                  child: ElevatedButton.icon(
+                                      icon: Icon(
+                                        const IconData(59956,
+                                            fontFamily: 'MaterialIcons'),
+                                        color: (selectedCategory == "All"
+                                            ? Colors.white
+                                            : currentTheme),
+                                      ),
+                                      label: Text(
+                                        "All",
+                                        style: TextStyle(
+                                          color: (selectedCategory == "All"
                                               ? Colors.white
                                               : currentTheme),
                                         ),
-                                        label: Text(
-                                          documentSnapshot['name'],
-                                          style: TextStyle(
-                                            color: (selectedCategory ==
-                                                    documentSnapshot['name']
-                                                ? Colors.white
-                                                : currentTheme),
-                                          ),
+                                      ),
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                          selectedCategory == "All"
+                                              ? currentTheme
+                                              : Colors.white,
                                         ),
-                                        style: ButtonStyle(
-                                          backgroundColor:
-                                              MaterialStateProperty.all(
-                                            selectedCategory ==
-                                                    documentSnapshot['name']
-                                                ? currentTheme
-                                                : Colors.white,
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          selectedCategory =
-                                              documentSnapshot['name'];
+                                      ),
+                                      onPressed: () {
+                                        selectedCategory = "All";
 
-                                          bloc.fillFilterdList(
-                                              selectedCategory);
-                                        });
-                                  });
-                            } else {
-                              return const CircularProgressIndicator();
-                            }
-                          }),
-                    ),
+                                        bloc.fillFilterdList(selectedCategory);
+                                      }),
+                                ),
+                                if (categoryStreamSnapshot.hasData)
+                                  SizedBox(
+                                    height: 50,
+                                    child: ListView.builder(
+                                        itemCount: categoryStreamSnapshot
+                                            .data?.docs.length,
+                                        shrinkWrap: true,
+                                        scrollDirection: Axis.horizontal,
+                                        itemBuilder: (context, index) {
+                                          final DocumentSnapshot
+                                              documentSnapshot =
+                                              categoryStreamSnapshot
+                                                  .data!.docs[index];
+
+                                          return ElevatedButton.icon(
+                                              icon: Icon(
+                                                IconData(
+                                                    documentSnapshot['icon'],
+                                                    fontFamily:
+                                                        'MaterialIcons'),
+                                                color: (selectedCategory ==
+                                                        documentSnapshot['name']
+                                                    ? Colors.white
+                                                    : currentTheme),
+                                              ),
+                                              label: Text(
+                                                documentSnapshot['name'],
+                                                style: TextStyle(
+                                                  color: (selectedCategory ==
+                                                          documentSnapshot[
+                                                              'name']
+                                                      ? Colors.white
+                                                      : currentTheme),
+                                                ),
+                                              ),
+                                              style: ButtonStyle(
+                                                backgroundColor:
+                                                    MaterialStateProperty.all(
+                                                  selectedCategory ==
+                                                          documentSnapshot[
+                                                              'name']
+                                                      ? currentTheme
+                                                      : Colors.white,
+                                                ),
+                                              ),
+                                              onPressed: () {
+                                                selectedCategory =
+                                                    documentSnapshot['name'];
+
+                                                bloc.fillFilterdList(
+                                                    selectedCategory);
+                                              });
+                                        }),
+                                  )
+                              ],
+                            ),
+                          );
+                        }),
                     transactionsSnapshot.data!.isNotEmpty
                         ? Flexible(
                             child: ListView.builder(
