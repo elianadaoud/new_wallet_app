@@ -38,14 +38,9 @@ class MainApp extends StatefulWidget {
 
 class MainAppState extends State<MainApp> {
   String? locale;
-  var appLanguage = locator<HiveService>().getSettings<String>(
-        boxName: 'settingsBox',
-        key: 'language',
-      ) ??
-      "English";
   @override
   void initState() {
-    locale = getAppLocaleFromLanguage(appLanguage);
+    rebuild();
     super.initState();
   }
 
