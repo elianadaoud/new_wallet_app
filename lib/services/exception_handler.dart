@@ -1,4 +1,4 @@
-import 'auth_result.dart';
+import '../enum/auth_result.dart';
 
 class AuthExceptionHandler {
   static handleException(e) {

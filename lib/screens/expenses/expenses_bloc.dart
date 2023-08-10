@@ -2,21 +2,21 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
-import '../../hive_db_service.dart';
-import '../../locator.dart';
+import '../../services/hive_db_service.dart';
+import '../../services/locator.dart';
 
 import '../../models/transactions.dart';
-import '../login/firebase_service.dart';
+import '../../services/firebase_service.dart';
 
 class ExpensesBloc {
-  final filteredListController = StreamController<List<Transactions>>();
-  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+  final filteredListController = StreamController<List<TransactionModel>>();
+  final FirebaseService _firebaseService = locator<FirebaseService>();
 
-  List<Transactions> myExpenses = [];
+  List<TransactionModel> myExpenses = [];
 
-  double calculateIncomeOutcome(String type, List<Transactions> transactions) {
+  double calculateIncomeOutcome(
+      String type, List<TransactionModel> transactions) {
     double totalMoney = 0;
 
     for (var expense in transactions) {
@@ -28,10 +28,10 @@ class ExpensesBloc {
     return totalMoney;
   }
 
-  List<Transactions> filteredList = [];
+  List<TransactionModel> filteredList = [];
 
   void fillFilterdList(String selectedCategory) {
-    String userId = _firebaseService.firebaseAuth.currentUser!.uid;
+    String userId = _firebaseService.firebaseAuth.currentUser?.uid ?? "";
 
     CollectionReference userTransactions = _firebaseService.firebaseStore
         .collection('transactions')
@@ -40,9 +40,9 @@ class ExpensesBloc {
 
     if (selectedCategory == 'All') {
       userTransactions.snapshots().listen((snapshot) {
-        List<Transactions> transactions = snapshot.docs
-            .map((doc) => Transactions.fromJson(
-                doc.data() as Map<String, dynamic>, doc.id))
+        List<TransactionModel> transactions = snapshot.docs
+            .map((doc) =>
+                TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
             .toList();
         filteredListController.sink.add(transactions);
       });
@@ -51,9 +51,9 @@ class ExpensesBloc {
           .where('category', isEqualTo: selectedCategory)
           .snapshots()
           .listen((snapshot) {
-        List<Transactions> filteredList = snapshot.docs
-            .map((doc) => Transactions.fromJson(
-                doc.data() as Map<String, dynamic>, doc.id))
+        List<TransactionModel> filteredList = snapshot.docs
+            .map((doc) =>
+                TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
             .toList();
         filteredListController.sink.add(filteredList);
       });

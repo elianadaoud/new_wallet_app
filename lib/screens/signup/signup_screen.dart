@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:get_it/get_it.dart';
+import 'package:new_app/screens/signup/signup_bloc.dart';
 
 import '../expenses/expenses_screen.dart';
-import '../expenses/widgets/auth_widgets.dart';
-import 'exception_handler.dart';
-import 'firebase_service.dart';
+import '../login/shared_widgets.dart';
+import '../../services/exception_handler.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,28 +14,7 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
-  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordControllerconfirm =
-      TextEditingController();
-  final formKey = GlobalKey<FormState>();
-
-  void register() async {
-    try {
-      await _firebaseService
-          .signUp(_emailController.text, _passwordController.text)
-          .then((value) => Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const ExpensesScreen()),
-              ));
-    } catch (e) {
-      final errorMessage = AuthExceptionHandler.handleException(e);
-
-      _firebaseService.showToast(
-          AuthExceptionHandler.generateExceptionMessage(errorMessage));
-    }
-  }
+  SignUpBloc signUpBloc = SignUpBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -48,27 +26,27 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: formKey,
+          key: signUpBloc.formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              reusableTextField(
-                  controller: _emailController,
+              customTextField(
+                  controller: signUpBloc.emailController,
                   text: 'Email',
                   isPassword: false,
                   icon: Icons.email),
               const SizedBox(height: 16),
-              reusableTextField(
-                  controller: _passwordController,
+              customTextField(
+                  controller: signUpBloc.passwordController,
                   text: 'Password',
                   isPassword: true,
                   icon: Icons.lock),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _passwordControllerconfirm,
+                controller: signUpBloc.passwordControllerconfirm,
                 validator: (value) {
                   if ((value?.isEmpty ?? true) ||
-                      value != _passwordController.text) {
+                      value != signUpBloc.passwordController.text) {
                     return 'Passwords are not matched!';
                   } else {
                     return null;
@@ -88,10 +66,19 @@ class _SignupScreenState extends State<SignupScreen> {
                 context: context,
                 type: 'Register',
                 onClicked: () async {
-                  if (!formKey.currentState!.validate()) {
+                  if (!signUpBloc.formKey.currentState!.validate()) {
                     return;
                   } else {
-                    register();
+                    signUpBloc.register().then((value) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ExpensesScreen()),
+                      );
+                    }).catchError((onError) {
+                      showToast(AuthExceptionHandler.generateExceptionMessage(
+                          onError));
+                    });
                   }
                 },
               )

@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:new_app/screens/login/login_screen.dart';
 
-import '../../hive_db_service.dart';
-import '../../locator.dart';
+import '../../services/hive_db_service.dart';
+import '../../services/locator.dart';
 import '../../mixins/bottom_sheet_settings_mixin.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -15,16 +15,8 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen>
     with BottomSheetSettings {
-  @override
-  void initState() {
-    super.initState();
-
-    locator<HiveService>().getSettings(boxName: 'settingsBox', key: 'language');
-    locator<HiveService>().getSettings(boxName: 'settingsBox', key: 'theme');
-  }
-
   void _loadSettings() {
-    var languages = locator<HiveService>()
+    String languages = locator<HiveService>()
         .getSettings(boxName: 'settingsBox', key: 'language');
     var themes = locator<HiveService>()
         .getSettings(boxName: 'settingsBox', key: 'theme');

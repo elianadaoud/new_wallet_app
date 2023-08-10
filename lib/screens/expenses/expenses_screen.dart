@@ -5,12 +5,12 @@ import 'package:localization/localization.dart';
 
 import 'package:new_app/screens/expenses/widgets/wallet.dart';
 
-import '../../hive_db_service.dart';
-import '../../locator.dart';
+import '../../services/hive_db_service.dart';
+import '../../services/locator.dart';
 import '../../mixins/methods_mixin.dart';
 
 import '../../models/transactions.dart';
-import '../login/firebase_service.dart';
+import '../../services/firebase_service.dart';
 import '../settings/settings_screen.dart';
 import 'expenses_bloc.dart';
 
@@ -25,10 +25,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
   ExpensesBloc bloc = ExpensesBloc();
   final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
 
-  Map<String, double> getCategoryOccurrences(List<Transactions> transactions) {
+  Map<String, double> getCategoryOccurrences(
+      List<TransactionModel> transactions) {
     Map<String, double> dataMap = {};
 
-    for (Transactions transaction in transactions) {
+    for (TransactionModel transaction in transactions) {
       String category = transaction.category;
       dataMap[category] = (dataMap[category] ?? 0) + 1;
     }
@@ -72,12 +73,12 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 trans: null,
                 onClicked: (value) {
                   _firebaseService.addTransaction(
-                      transactionData: Transactions(
+                      transactionData: TransactionModel(
                           desc: value.desc,
                           amount: value.amount,
                           type: value.type,
                           category: value.category),
-                      transactions: 'transactions',
+                      collectionName: 'transactions',
                       userTransactions: 'userTransactions');
 
                   bloc.fillFilterdList(selectedCategory);
@@ -107,36 +108,40 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 ))
           ],
         ),
-        body: StreamBuilder<List<Transactions>>(
+        body: StreamBuilder<List<TransactionModel>>(
             initialData: const [],
             stream: bloc.filteredListController.stream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
+            builder: (context, transactionsSnapshot) {
+              if (transactionsSnapshot.hasData) {
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Wallet(
                       theme: currentTheme,
-                      income:
-                          bloc.calculateIncomeOutcome('Income', snapshot.data!),
+                      income: bloc.calculateIncomeOutcome(
+                          'Income', transactionsSnapshot.data!),
                       outcome: bloc.calculateIncomeOutcome(
-                          'Outcome', snapshot.data!),
-                      pieMap: getCategoryOccurrences(snapshot.data!),
+                          'Outcome', transactionsSnapshot.data!),
+                      pieMap:
+                          getCategoryOccurrences(transactionsSnapshot.data!),
                     ),
                     SizedBox(
                       height: 50,
                       child: StreamBuilder(
                           stream: _firebaseService.categories.snapshots(),
                           builder: (context,
-                              AsyncSnapshot<QuerySnapshot> streamSnapshot) {
-                            if (streamSnapshot.hasData) {
+                              AsyncSnapshot<QuerySnapshot>
+                                  categoryStreamSnapshot) {
+                            if (categoryStreamSnapshot.hasData) {
                               return ListView.builder(
-                                  itemCount: streamSnapshot.data?.docs.length,
+                                  itemCount:
+                                      categoryStreamSnapshot.data?.docs.length,
                                   shrinkWrap: true,
                                   scrollDirection: Axis.horizontal,
                                   itemBuilder: (context, index) {
                                     final DocumentSnapshot documentSnapshot =
-                                        streamSnapshot.data!.docs[index];
+                                        categoryStreamSnapshot
+                                            .data!.docs[index];
 
                                     return ElevatedButton.icon(
                                         icon: Icon(
@@ -178,10 +183,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                             }
                           }),
                     ),
-                    snapshot.data!.isNotEmpty
+                    transactionsSnapshot.data!.isNotEmpty
                         ? Flexible(
                             child: ListView.builder(
-                                itemCount: snapshot.data!.length,
+                                itemCount: transactionsSnapshot.data!.length,
                                 itemBuilder: (context, index) {
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -193,16 +198,19 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                           color: currentTheme),
                                       child: Row(
                                         children: [
-                                          snapshot.data![index].type ==
+                                          transactionsSnapshot
+                                                      .data![index].type ==
                                                   'Outcome'
                                               ? const Icon(Icons.arrow_upward)
                                               : const Icon(
                                                   Icons.arrow_downward),
-                                          snapshot.data![index].type == 'Income'
+                                          transactionsSnapshot
+                                                      .data![index].type ==
+                                                  'Income'
                                               ? Text(
-                                                  'Income ${snapshot.data![index].amount}')
+                                                  'Income ${transactionsSnapshot.data![index].amount}')
                                               : Text(
-                                                  'Outcome ${snapshot.data![index].amount}'),
+                                                  'Outcome ${transactionsSnapshot.data![index].amount}'),
                                           const SizedBox(width: 25),
                                           Expanded(
                                             child: Column(
@@ -211,7 +219,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                               children: [
                                                 Text(
                                                   textAlign: TextAlign.center,
-                                                  snapshot
+                                                  transactionsSnapshot
                                                       .data![index].category,
                                                   softWrap: true,
                                                   overflow:
@@ -219,7 +227,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                                 ),
                                                 Text(
                                                   textAlign: TextAlign.center,
-                                                  snapshot.data![index].desc,
+                                                  transactionsSnapshot
+                                                      .data![index].desc,
                                                   softWrap: true,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -232,20 +241,19 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                               onPressed: () {
                                                 showBottomSheetMethod(
                                                   ctx: context,
-                                                  trans: snapshot.data![index],
+                                                  trans: transactionsSnapshot
+                                                      .data![index],
                                                   onClicked: (value) async {
-                                                    _firebaseService
-                                                        .updateTransaction(
-                                                            transactionId:
-                                                                snapshot
-                                                                    .data![
-                                                                        index]
-                                                                    .doc!,
-                                                            updatedData: value,
-                                                            transactions:
-                                                                'transactions',
-                                                            userTransactions:
-                                                                'userTransactions');
+                                                    _firebaseService.updateTransaction(
+                                                        transactionId:
+                                                            transactionsSnapshot
+                                                                .data![index]
+                                                                .uniqueId!,
+                                                        updatedData: value,
+                                                        transactions:
+                                                            'transactions',
+                                                        userTransactions:
+                                                            'userTransactions');
 
                                                     bloc.fillFilterdList(
                                                         selectedCategory);
@@ -257,9 +265,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                               iconSize: 15,
                                               onPressed: () {
                                                 deleteAlert(
-                                                    snapshot.data![index].doc!,
+                                                    transactionsSnapshot
+                                                        .data![index].uniqueId!,
                                                     context,
-                                                    bloc);
+                                                    bloc,
+                                                    selectedCategory);
                                               },
                                               icon: const Icon(Icons.delete))
                                         ],

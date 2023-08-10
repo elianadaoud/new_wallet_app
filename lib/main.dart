@@ -3,13 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 
-import 'package:new_app/hive_db_service.dart';
+import 'package:new_app/services/hive_db_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import 'firebase_options.dart';
-import 'locator.dart';
+import 'services/firebase_options.dart';
+import 'services/locator.dart';
 
 import 'screens/login/login_screen.dart';
 

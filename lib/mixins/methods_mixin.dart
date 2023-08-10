@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:new_app/services/locator.dart';
 
 import '../models/transactions.dart';
 import '../screens/expenses/expenses_bloc.dart';
 import '../screens/expenses/widgets/bottom_sheet_widget.dart';
-import '../screens/login/firebase_service.dart';
+import '../services/firebase_service.dart';
 
 mixin WidgetsMixin {
-  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
-  deleteAlert(var docTrans, BuildContext context, ExpensesBloc bloc) {
+  final FirebaseService _firebaseService = locator<FirebaseService>();
+  deleteAlert(var docTrans, BuildContext context, ExpensesBloc bloc,
+      String selectedCategory) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -28,8 +29,7 @@ mixin WidgetsMixin {
                         transactionId: docTrans,
                         transactions: 'transactions',
                         userTransactions: 'userTransactions');
-
-                    bloc.myExpenses = bloc.filteredList;
+                    bloc.fillFilterdList(selectedCategory);
 
                     if (context.mounted) {
                       Navigator.pop(context);
@@ -52,8 +52,8 @@ mixin WidgetsMixin {
 
   showBottomSheetMethod({
     required BuildContext ctx,
-    final Transactions? trans,
-    required Function(Transactions) onClicked,
+    final TransactionModel? trans,
+    required Function(TransactionModel) onClicked,
   }) {
     showModalBottomSheet(
         shape: const RoundedRectangleBorder(

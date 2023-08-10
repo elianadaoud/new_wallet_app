@@ -1,19 +1,17 @@
 import 'package:uuid/uuid.dart';
 
-class Transactions {
+class TransactionModel {
   final String desc;
   final double amount;
   final String category;
   final String type;
   String? uniqueId;
-  String? doc;
 
-  Transactions({
+  TransactionModel({
     required this.desc,
     required this.amount,
     required this.type,
     required this.category,
-    this.doc,
     this.uniqueId,
   }) {
     uniqueId ??= const Uuid().v4();
@@ -29,13 +27,12 @@ class Transactions {
     };
   }
 
-  factory Transactions.fromJson(Map<String, dynamic> json, transactionId) {
-    return Transactions(
+  factory TransactionModel.fromJson(Map<String, dynamic> json) {
+    return TransactionModel(
         desc: json['desc'],
         amount: json['amount'],
         category: json['category'],
         type: json['type'],
-        doc: transactionId,
         uniqueId: json['uniqueId']);
   }
 }
