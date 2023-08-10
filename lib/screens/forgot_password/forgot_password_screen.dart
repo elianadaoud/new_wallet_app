@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
-import '../expenses/widgets/auth_widgets.dart';
-import 'firebase_service.dart';
+import '../../services/exception_handler.dart';
+import '../login/shared_widgets.dart';
+import 'forgot_password_bloc.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -12,10 +12,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
-  final TextEditingController _emailController = TextEditingController();
-
-  final formKey = GlobalKey<FormState>();
+  ForgotPasswordBloc fbBloc = ForgotPasswordBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -27,12 +24,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: formKey,
+          key: fbBloc.formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              reusableTextField(
-                  controller: _emailController,
+              customTextField(
+                  controller: fbBloc.emailController,
                   text: 'Email',
                   isPassword: false,
                   icon: Icons.email),
@@ -41,10 +38,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 context: context,
                 type: 'Send reset password email',
                 onClicked: () async {
-                  if (!formKey.currentState!.validate()) {
+                  if (!fbBloc.formKey.currentState!.validate()) {
                     return;
                   } else {
-                    _firebaseService.resetPassword(_emailController.text);
+                    fbBloc
+                        .resetPassword(fbBloc.emailController.text)
+                        .then((value) {
+                      showToast(
+                          'You should receive reset password email within seconds!');
+                    }).catchError((onError) {
+                      showToast(AuthExceptionHandler.generateExceptionMessage(
+                          onError));
+                    });
                   }
                 },
               )

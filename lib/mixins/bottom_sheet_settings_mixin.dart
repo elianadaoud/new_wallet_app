@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../hive_db_service.dart';
-import '../locator.dart';
+import '../services/hive_db_service.dart';
+import '../services/locator.dart';
 
 import '../main.dart';
 import '../screens/settings/settings_bloc.dart';

@@ -1,15 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
-import 'package:get_it/get_it.dart';
 import 'package:new_app/screens/expenses/expenses_screen.dart';
-import 'package:new_app/screens/login/forgot_password.dart';
-import 'package:new_app/screens/login/signup_screen.dart';
+import 'package:new_app/screens/forgot_password/forgot_password_screen.dart';
+import 'package:new_app/screens/login/login_bloc.dart';
+import 'package:new_app/screens/signup/signup_screen.dart';
 
-import '../expenses/widgets/auth_widgets.dart';
-import 'exception_handler.dart';
-import 'firebase_service.dart';
+import 'shared_widgets.dart';
+import '../../services/exception_handler.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -21,36 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final StreamController<bool> passStreamController = StreamController<bool>();
-  final formkey = GlobalKey<FormState>();
-
-  bool isPasswordVisable = false;
-  void togglePasswordVisibility() {
-    isPasswordVisable = !isPasswordVisable;
-    passStreamController.sink.add(isPasswordVisable);
-  }
-
-  void login() async {
-    try {
-      await _firebaseService
-          .signIn(_emailController.text, _passwordController.text)
-          .then((value) => {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ExpensesScreen()),
-                ),
-              });
-    } catch (e) {
-      final errorMessage = AuthExceptionHandler.handleException(e);
-
-      _firebaseService.showToast(
-          AuthExceptionHandler.generateExceptionMessage(errorMessage));
-    }
-  }
+  LoginBloc loginBloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -67,8 +35,8 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: Form(
-                  child: reusableTextField(
-                      controller: _emailController,
+                  child: customTextField(
+                      controller: loginBloc.emailController,
                       text: 'Email',
                       isPassword: false,
                       icon: Icons.email),
@@ -76,11 +44,11 @@ class _LoginScreenState extends State<LoginScreen> {
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: StreamBuilder<bool>(
-                    stream: passStreamController.stream,
+                    stream: loginBloc.passStreamController.stream,
                     builder: (context, snapshot) {
                       return TextFormField(
-                        controller: _passwordController,
-                        obscureText: !isPasswordVisable,
+                        controller: loginBloc.passwordController,
+                        obscureText: !loginBloc.isPasswordVisable,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20)),
@@ -89,10 +57,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             hintText: 'Enter secure password',
                             suffix: InkWell(
                               onTap: () {
-                                togglePasswordVisibility();
+                                loginBloc.togglePasswordVisibility();
                               },
                               child: Text(
-                                isPasswordVisable ? "Hide" : "show",
+                                loginBloc.isPasswordVisable ? "Hide" : "show",
                               ),
                             )),
                       );
@@ -101,7 +69,16 @@ class _LoginScreenState extends State<LoginScreen> {
               context: context,
               type: 'Login',
               onClicked: () {
-                login();
+                loginBloc.login().then((value) {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ExpensesScreen()),
+                  );
+                }).catchError((onError) {
+                  showToast(
+                      AuthExceptionHandler.generateExceptionMessage(onError));
+                });
               },
             ),
             const SizedBox(

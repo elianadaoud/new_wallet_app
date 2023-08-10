@@ -5,8 +5,8 @@ import 'package:localization/localization.dart';
 import '../../../models/transactions.dart';
 
 class BottomSheetWidget extends StatefulWidget {
-  final Transactions? trans;
-  final Function(Transactions) onClicked;
+  final TransactionModel? trans;
+  final Function(TransactionModel) onClicked;
 
   const BottomSheetWidget({
     Key? key,
@@ -110,7 +110,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                             if (!formKey.currentState!.validate()) {
                               return;
                             } else {
-                              final newTransaction = Transactions(
+                              final newTransaction = TransactionModel(
                                 desc: descController.text,
                                 amount: double.parse(priceController.text),
                                 type: type,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 Image logoWidget(String logoPath) {
   return Image.asset(
@@ -9,7 +10,7 @@ Image logoWidget(String logoPath) {
   );
 }
 
-TextFormField reusableTextField(
+TextFormField customTextField(
     {required String text,
     required IconData icon,
     required bool isPassword,
@@ -62,5 +63,16 @@ Container authButton(
             const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
     ),
+  );
+}
+
+void showToast(String message) {
+  Fluttertoast.showToast(
+    timeInSecForIosWeb: 3,
+    msg: message,
+    toastLength: Toast.LENGTH_SHORT,
+    gravity: ToastGravity.BOTTOM,
+    backgroundColor: Colors.red,
+    textColor: Colors.white,
   );
 }
