@@ -15,6 +15,13 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen>
     with BottomSheetSettings {
+  @override
+  void initState() {
+    _loadSettings();
+
+    super.initState();
+  }
+
   void _loadSettings() {
     String languages = locator<HiveService>()
         .getSettings(boxName: 'settingsBox', key: 'language');
@@ -23,14 +30,10 @@ class _SettingsScreenState extends State<SettingsScreen>
 
     language = languages;
     theme = themes;
-
-    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    _loadSettings();
-
     return StreamBuilder<String>(
         stream: settingsBloc.themeStream,
         builder: (context, snapshot) {

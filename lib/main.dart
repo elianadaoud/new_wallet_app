@@ -52,7 +52,7 @@ class MainAppState extends State<MainApp> {
         locale: Locale(locale ?? "en"),
         localizationsDelegates: [
           GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
+          //  GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
           LocalJsonLocalization.delegate,
         ],

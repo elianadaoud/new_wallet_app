@@ -38,31 +38,31 @@ class ExpensesBloc {
         .doc(userId)
         .collection('userTransactions');
 
+    Stream<QuerySnapshot<Map<String, dynamic>>>? transactionStream;
+
     if (selectedCategory == 'All') {
-      userTransactions.snapshots().listen((snapshot) {
-        Map<String, TransactionModel> transactionMap = {};
-
-        snapshot.docs.map((doc) {
-          final transactionData = doc.data() as Map<String, dynamic>;
-          transactionMap[doc.id] = TransactionModel.fromJson(transactionData);
-        }).toList();
-
-        filteredListController.sink.add(transactionMap);
-      });
+      transactionStream = userTransactions.snapshots()
+          as Stream<QuerySnapshot<Map<String, dynamic>>>?;
     } else {
-      Map<String, TransactionModel> transactionMap = {};
-      userTransactions
+      transactionStream = userTransactions
           .where('category', isEqualTo: selectedCategory)
-          .snapshots()
-          .listen((snapshot) {
-        snapshot.docs.map((doc) {
-          final transactionData = doc.data() as Map<String, dynamic>;
-          transactionMap[doc.id] = TransactionModel.fromJson(transactionData);
-        }).toList();
-
-        filteredListController.sink.add(transactionMap);
-      });
+          .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>?;
     }
+
+    transactionStream!.listen((snapshot) {
+      Map<String, TransactionModel> transactionMap = {};
+
+      for (var doc in snapshot.docs) {
+        final transactionData = doc.data();
+        final uniqueId = doc.id;
+        transactionMap[uniqueId] =
+            TransactionModel.fromJson(transactionData, uniqueId);
+      }
+
+      filteredListController.sink.add(transactionMap);
+    }, onError: (error) {
+      print("Error retrieving transactions: $error");
+    });
   }
 
   Color getThemeColor() {
