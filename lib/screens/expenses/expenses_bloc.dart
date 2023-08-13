@@ -10,7 +10,8 @@ import '../../models/transactions.dart';
 import '../../services/firebase_service.dart';
 
 class ExpensesBloc {
-  final filteredListController = StreamController<List<TransactionModel>>();
+  final filteredListController =
+      StreamController<Map<String, TransactionModel>>();
   final FirebaseService _firebaseService = locator<FirebaseService>();
 
   List<TransactionModel> myExpenses = [];
@@ -29,7 +30,6 @@ class ExpensesBloc {
   }
 
   List<TransactionModel> filteredList = [];
-
   void fillFilterdList(String selectedCategory) {
     String userId = _firebaseService.firebaseAuth.currentUser?.uid ?? "";
 
@@ -40,22 +40,27 @@ class ExpensesBloc {
 
     if (selectedCategory == 'All') {
       userTransactions.snapshots().listen((snapshot) {
-        List<TransactionModel> transactions = snapshot.docs
-            .map((doc) =>
-                TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        filteredListController.sink.add(transactions);
+        Map<String, TransactionModel> transactionMap = {};
+
+        snapshot.docs.map((doc) {
+          final transactionData = doc.data() as Map<String, dynamic>;
+          transactionMap[doc.id] = TransactionModel.fromJson(transactionData);
+        }).toList();
+
+        filteredListController.sink.add(transactionMap);
       });
     } else {
+      Map<String, TransactionModel> transactionMap = {};
       userTransactions
           .where('category', isEqualTo: selectedCategory)
           .snapshots()
           .listen((snapshot) {
-        List<TransactionModel> filteredList = snapshot.docs
-            .map((doc) =>
-                TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        filteredListController.sink.add(filteredList);
+        snapshot.docs.map((doc) {
+          final transactionData = doc.data() as Map<String, dynamic>;
+          transactionMap[doc.id] = TransactionModel.fromJson(transactionData);
+        }).toList();
+
+        filteredListController.sink.add(transactionMap);
       });
     }
   }

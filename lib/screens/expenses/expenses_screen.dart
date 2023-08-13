@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:localization/localization.dart';
-
 import 'package:new_app/screens/expenses/widgets/wallet.dart';
-
 import '../../services/hive_db_service.dart';
 import '../../services/locator.dart';
 import '../../mixins/methods_mixin.dart';
@@ -108,22 +106,25 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 ))
           ],
         ),
-        body: StreamBuilder<List<TransactionModel>>(
-            initialData: const [],
+        body: StreamBuilder<Map<String, TransactionModel>>(
+            initialData: const <String, TransactionModel>{},
             stream: bloc.filteredListController.stream,
             builder: (context, transactionsSnapshot) {
               if (transactionsSnapshot.hasData) {
+                Map<String, TransactionModel> transactionMap =
+                    transactionsSnapshot.data!;
+
                 return Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Wallet(
                       theme: currentTheme,
                       income: bloc.calculateIncomeOutcome(
-                          'Income', transactionsSnapshot.data!),
+                          'Income', transactionMap.values.toList()),
                       outcome: bloc.calculateIncomeOutcome(
-                          'Outcome', transactionsSnapshot.data!),
-                      pieMap:
-                          getCategoryOccurrences(transactionsSnapshot.data!),
+                          'Outcome', transactionMap.values.toList()),
+                      pieMap: getCategoryOccurrences(
+                          transactionMap.values.toList()),
                     ),
                     StreamBuilder(
                         stream: _firebaseService.categories.snapshots(),
@@ -225,11 +226,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                             ),
                           );
                         }),
-                    transactionsSnapshot.data!.isNotEmpty
+                    (transactionsSnapshot.data!.isNotEmpty ||
+                            transactionsSnapshot.data != null)
                         ? Flexible(
                             child: ListView.builder(
                                 itemCount: transactionsSnapshot.data!.length,
                                 itemBuilder: (context, index) {
+                                  String key =
+                                      transactionMap.keys.elementAt(index);
+                                  TransactionModel? transaction =
+                                      transactionMap[key];
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
@@ -240,19 +246,15 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                           color: currentTheme),
                                       child: Row(
                                         children: [
-                                          transactionsSnapshot
-                                                      .data![index].type ==
-                                                  'Outcome'
+                                          transaction!.type == 'Outcome'
                                               ? const Icon(Icons.arrow_upward)
                                               : const Icon(
                                                   Icons.arrow_downward),
-                                          transactionsSnapshot
-                                                      .data![index].type ==
-                                                  'Income'
+                                          transaction.type == 'Income'
                                               ? Text(
-                                                  'Income ${transactionsSnapshot.data![index].amount}')
+                                                  'Income ${transaction.amount}')
                                               : Text(
-                                                  'Outcome ${transactionsSnapshot.data![index].amount}'),
+                                                  'Outcome ${transaction.amount}'),
                                           const SizedBox(width: 25),
                                           Expanded(
                                             child: Column(
@@ -261,16 +263,14 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                               children: [
                                                 Text(
                                                   textAlign: TextAlign.center,
-                                                  transactionsSnapshot
-                                                      .data![index].category,
+                                                  transaction.category,
                                                   softWrap: true,
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
                                                 Text(
                                                   textAlign: TextAlign.center,
-                                                  transactionsSnapshot
-                                                      .data![index].desc,
+                                                  transaction.desc,
                                                   softWrap: true,
                                                   overflow:
                                                       TextOverflow.ellipsis,
@@ -283,19 +283,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                               onPressed: () {
                                                 showBottomSheetMethod(
                                                   ctx: context,
-                                                  trans: transactionsSnapshot
-                                                      .data![index],
+                                                  trans: transaction,
                                                   onClicked: (value) async {
-                                                    _firebaseService.updateTransaction(
-                                                        transactionId:
-                                                            transactionsSnapshot
-                                                                .data![index]
-                                                                .uniqueId!,
-                                                        updatedData: value,
-                                                        transactions:
-                                                            'transactions',
-                                                        userTransactions:
-                                                            'userTransactions');
+                                                    _firebaseService
+                                                        .updateTransaction(
+                                                            transactionId: key,
+                                                            updatedData: value,
+                                                            transactions:
+                                                                'transactions',
+                                                            userTransactions:
+                                                                'userTransactions');
 
                                                     bloc.fillFilterdList(
                                                         selectedCategory);
@@ -306,11 +303,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                                           IconButton(
                                               iconSize: 15,
                                               onPressed: () {
-                                                deleteAlert(
-                                                    transactionsSnapshot
-                                                        .data![index].uniqueId!,
-                                                    context,
-                                                    bloc,
+                                                deleteAlert(key, context, bloc,
                                                     selectedCategory);
                                               },
                                               icon: const Icon(Icons.delete))
