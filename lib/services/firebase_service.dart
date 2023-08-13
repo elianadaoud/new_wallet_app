@@ -58,23 +58,6 @@ class FirebaseService {
     await userTransaction.set(transactionData.toJson());
   }
 
-  Stream<List<TransactionModel>> getUserTransactions(
-      {required String transactions, required String userTransactions}) {
-    String userId = firebaseAuth.currentUser!.uid;
-
-    CollectionReference userTransaction = firebaseStore
-        .collection(transactions)
-        .doc(userId)
-        .collection(userTransactions);
-
-    return userTransaction.snapshots().map(
-          (querySnapshot) => querySnapshot.docs
-              .map((doc) =>
-                  TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
-              .toList(),
-        );
-  }
-
   Future<String> signIn(String email, String password) async {
     final result = await firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);

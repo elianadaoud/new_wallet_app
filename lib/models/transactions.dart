@@ -23,16 +23,20 @@ class TransactionModel {
       'amount': amount,
       'category': category,
       'type': type,
-      'uniqueId': uniqueId
+      // 'uniqueId': uniqueId
     };
   }
 
-  factory TransactionModel.fromJson(Map<String, dynamic> json) {
+  factory TransactionModel.fromJson(
+    Map<String, dynamic> json,
+    // String uniqueId
+  ) {
     return TransactionModel(
-        desc: json['desc'],
-        amount: json['amount'],
-        category: json['category'],
-        type: json['type'],
-        uniqueId: json['uniqueId']);
+      desc: json['desc'],
+      amount: json['amount'],
+      category: json['category'],
+      type: json['type'],
+      // uniqueId: json['uniqueId']
+    );
   }
 }
