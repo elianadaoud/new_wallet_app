@@ -43,12 +43,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 )),
             Padding(
                 padding: const EdgeInsets.all(10),
-                child: StreamBuilder<bool>(
-                    stream: loginBloc.passStreamController.stream,
-                    builder: (context, snapshot) {
+                child: ValueListenableBuilder<bool>(
+                    valueListenable: loginBloc.passwordNotifier,
+                    builder: (context, isPasswordVisable, child) {
                       return TextFormField(
                         controller: loginBloc.passwordController,
-                        obscureText: !loginBloc.isPasswordVisable,
+                        obscureText: isPasswordVisable,
                         decoration: InputDecoration(
                             border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20)),
@@ -60,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 loginBloc.togglePasswordVisibility();
                               },
                               child: Text(
-                                loginBloc.isPasswordVisable ? "Hide" : "show",
+                                isPasswordVisable ? "Hide" : "show",
                               ),
                             )),
                       );
