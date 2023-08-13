@@ -10,7 +10,8 @@ import '../../models/transactions.dart';
 import '../../services/firebase_service.dart';
 
 class ExpensesBloc {
-  final filteredListController = StreamController<List<TransactionModel>>();
+  final filteredListController =
+      StreamController<Map<String, TransactionModel>>();
   final FirebaseService _firebaseService = locator<FirebaseService>();
 
   List<TransactionModel> myExpenses = [];
@@ -29,7 +30,6 @@ class ExpensesBloc {
   }
 
   List<TransactionModel> filteredList = [];
-
   void fillFilterdList(String selectedCategory) {
     String userId = _firebaseService.firebaseAuth.currentUser?.uid ?? "";
 
@@ -38,26 +38,31 @@ class ExpensesBloc {
         .doc(userId)
         .collection('userTransactions');
 
+    Stream<QuerySnapshot<Map<String, dynamic>>>? transactionStream;
+
     if (selectedCategory == 'All') {
-      userTransactions.snapshots().listen((snapshot) {
-        List<TransactionModel> transactions = snapshot.docs
-            .map((doc) =>
-                TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        filteredListController.sink.add(transactions);
-      });
+      transactionStream = userTransactions.snapshots()
+          as Stream<QuerySnapshot<Map<String, dynamic>>>?;
     } else {
-      userTransactions
+      transactionStream = userTransactions
           .where('category', isEqualTo: selectedCategory)
-          .snapshots()
-          .listen((snapshot) {
-        List<TransactionModel> filteredList = snapshot.docs
-            .map((doc) =>
-                TransactionModel.fromJson(doc.data() as Map<String, dynamic>))
-            .toList();
-        filteredListController.sink.add(filteredList);
-      });
+          .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>?;
     }
+
+    transactionStream!.listen((snapshot) {
+      Map<String, TransactionModel> transactionMap = {};
+
+      for (var doc in snapshot.docs) {
+        final transactionData = doc.data();
+        final uniqueId = doc.id;
+        transactionMap[uniqueId] =
+            TransactionModel.fromJson(transactionData, uniqueId);
+      }
+
+      filteredListController.sink.add(transactionMap);
+    }, onError: (error) {
+      print("Error retrieving transactions: $error");
+    });
   }
 
   Color getThemeColor() {

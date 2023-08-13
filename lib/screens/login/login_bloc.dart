@@ -10,13 +10,11 @@ class LoginBloc {
   final FirebaseService firebaseService = locator<FirebaseService>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final StreamController<bool> passStreamController = StreamController<bool>();
   final formkey = GlobalKey<FormState>();
+  final ValueNotifier<bool> passwordNotifier = ValueNotifier<bool>(true);
 
-  bool isPasswordVisable = false;
   void togglePasswordVisibility() {
-    isPasswordVisable = !isPasswordVisable;
-    passStreamController.sink.add(isPasswordVisable);
+    passwordNotifier.value = !passwordNotifier.value;
   }
 
   Future<void> login() async {
