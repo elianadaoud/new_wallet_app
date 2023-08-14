@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import 'services/firebase_options.dart';
+import 'services/local_notifiactions_service.dart';
 import 'services/locator.dart';
 
 import 'screens/login/login_screen.dart';
@@ -20,6 +21,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  final localNotificationsService = LocalNotificationsService();
+  await localNotificationsService.initNotification();
+
   setupLocator();
   await locator<HiveService>().openBoxes();
 

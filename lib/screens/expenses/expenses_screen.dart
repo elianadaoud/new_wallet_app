@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:localization/localization.dart';
 import 'package:new_app/screens/expenses/widgets/wallet.dart';
+import 'package:new_app/services/local_notifiactions_service.dart';
 import '../../services/hive_db_service.dart';
 import '../../services/locator.dart';
 import '../../mixins/methods_mixin.dart';
@@ -21,7 +21,10 @@ class ExpensesScreen extends StatefulWidget {
 
 class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
   ExpensesBloc bloc = ExpensesBloc();
-  final FirebaseService _firebaseService = GetIt.I.get<FirebaseService>();
+
+  final FirebaseService _firebaseService = locator<FirebaseService>();
+  final LocalNotificationsService localNotificationsService =
+      locator<LocalNotificationsService>();
 
   Map<String, double> getCategoryOccurrences(
       List<TransactionModel> transactions) {
@@ -37,6 +40,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
 
   @override
   void initState() {
+    localNotificationsService.startTimer();
     bloc.fillFilterdList('All');
 
     String them = locator<HiveService>()
@@ -70,6 +74,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 ctx: context,
                 trans: null,
                 onClicked: (value) {
+                  localNotificationsService.resetTimer();
                   _firebaseService.addTransaction(
                       transactionData: TransactionModel(
                           desc: value.desc,
@@ -323,5 +328,11 @@ class _ExpensesScreenState extends State<ExpensesScreen> with WidgetsMixin {
                 return const CircularProgressIndicator();
               }
             }));
+  }
+
+  @override
+  void dispose() {
+    localNotificationsService.notificationTimer?.cancel();
+    super.dispose();
   }
 }

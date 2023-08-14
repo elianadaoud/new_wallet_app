@@ -11,7 +11,7 @@ class LoginBloc {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final formkey = GlobalKey<FormState>();
-  final ValueNotifier<bool> passwordNotifier = ValueNotifier<bool>(true);
+  final ValueNotifier<bool> passwordNotifier = ValueNotifier<bool>(false);
 
   void togglePasswordVisibility() {
     passwordNotifier.value = !passwordNotifier.value;
