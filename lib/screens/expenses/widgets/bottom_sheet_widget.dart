@@ -8,11 +8,7 @@ class BottomSheetWidget extends StatefulWidget {
   final TransactionModel? trans;
   final Function(TransactionModel) onClicked;
 
-  const BottomSheetWidget({
-    Key? key,
-    this.trans,
-    required this.onClicked,
-  }) : super(key: key);
+  const BottomSheetWidget({super.key, this.trans, required this.onClicked});
 
   @override
   State<BottomSheetWidget> createState() => _BottomSheetWidgetState();
@@ -30,11 +26,9 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
   List<Map<String, dynamic>> categoryData = [];
 
   Future<void> fetchCategoryData() async {
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('categories').get();
+    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('categories').get();
 
-    categoryData =
-        snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+    categoryData = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
 
     setState(() {});
   }
@@ -68,10 +62,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
     }).toList();
 
     return Padding(
-        padding: EdgeInsets.only(
-            right: 20,
-            left: 20,
-            bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(right: 20, left: 20, bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -92,13 +83,8 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                             style: const TextStyle(color: Colors.teal),
                           )),
                       Text(
-                        widget.trans == null
-                            ? "add-text".i18n()
-                            : "edit-text".i18n(),
-                        style: const TextStyle(
-                            color: Colors.teal,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
+                        widget.trans == null ? "add-text".i18n() : "edit-text".i18n(),
+                        style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       TextButton(
                           child: Text(
@@ -113,12 +99,10 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                                 desc: descController.text,
                                 amount: double.parse(priceController.text),
                                 type: type,
-                                category:
-                                    selectedCategory ?? categoryNames.first,
+                                category: selectedCategory ?? categoryNames.first,
                               );
                               if (widget.trans != null) {
-                                newTransaction.uniqueId =
-                                    widget.trans!.uniqueId;
+                                newTransaction.uniqueId = widget.trans!.uniqueId;
                               }
                               widget.onClicked(newTransaction);
                             }
@@ -141,8 +125,7 @@ class _BottomSheetWidgetState extends State<BottomSheetWidget> {
                   TextFormField(
                     controller: priceController,
                     validator: (value) {
-                      if ((value?.isEmpty ?? true) ||
-                          double.parse(value!) <= 0.0) {
+                      if ((value?.isEmpty ?? true) || double.parse(value!) <= 0.0) {
                         return "price-not-number-message-text".i18n();
                       } else {
                         return null;

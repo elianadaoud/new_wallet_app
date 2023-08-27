@@ -1,4 +1,4 @@
-import 'dart:async';
+// import 'dart:async';
 
 import 'package:flutter/material.dart';
 
@@ -6,17 +6,18 @@ import '../../services/hive_db_service.dart';
 import '../../services/locator.dart';
 
 class SettingsBloc {
-  final StreamController<String> languageStreamController =
-      StreamController<String>();
-  Stream<String> get languageStream => languageStreamController.stream;
-  final StreamController<String> themeStreamController =
-      StreamController<String>();
-  Stream<String> get themeStream => themeStreamController.stream;
+  // final StreamController<String> themeStreamController = StreamController<String>();
+
+  String language = 'English';
+  String theme = 'Red';
+
+  void loadSettings() {
+    language = locator<HiveService>().getSettings(key: 'language') ?? 'English';
+    theme = locator<HiveService>().getSettings(key: 'theme') ?? 'Red';
+  }
 
   Color getThemeColor() {
-    var currentTheme = locator<HiveService>()
-            .getSettings(boxName: 'settingsBox', key: 'theme') ??
-        'Red';
+    var currentTheme = locator<HiveService>().getSettings(key: 'theme') ?? 'Red';
     switch (currentTheme) {
       case 'Red':
         return Colors.red;

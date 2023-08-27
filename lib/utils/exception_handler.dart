@@ -1,7 +1,17 @@
-import '../enum/auth_result.dart';
+enum AuthResultStatus {
+  successful,
+  emailAlreadyExists,
+  wrongPassword,
+  invalidEmail,
+  userNotFound,
+  userDisabled,
+  operationNotAllowed,
+  tooManyRequests,
+  undefined,
+}
 
 class AuthExceptionHandler {
-  static handleException(e) {
+  static AuthResultStatus handleException(e) {
     AuthResultStatus status;
     switch (e.code) {
       case "invalid-email":
@@ -34,7 +44,7 @@ class AuthExceptionHandler {
     return status;
   }
 
-  static generateExceptionMessage(exceptionCode) {
+  static String generateExceptionMessage(exceptionCode) {
     String errorMessage;
     switch (exceptionCode) {
       case AuthResultStatus.invalidEmail:
@@ -56,8 +66,7 @@ class AuthExceptionHandler {
         errorMessage = "Signing in with Email and Password is not enabled.";
         break;
       case AuthResultStatus.emailAlreadyExists:
-        errorMessage =
-            "The email has already been registered. Please login or reset your password.";
+        errorMessage = "The email has already been registered. Please login or reset your password.";
         break;
       default:
         errorMessage = "An undefined Error happened.";

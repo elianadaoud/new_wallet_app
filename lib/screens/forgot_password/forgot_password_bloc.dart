@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../services/exception_handler.dart';
+import '../../utils/exception_handler.dart';
 import '../../services/firebase_service.dart';
 import '../../services/locator.dart';
 

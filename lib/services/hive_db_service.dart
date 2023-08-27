@@ -7,25 +7,11 @@ class HiveService {
     settingsBox = await Hive.openBox('settingsBox');
   }
 
-  Future<void> setSettings<T>(
-      {required String boxName, required String key, required T value}) async {
-    switch (boxName) {
-      case 'settingsBox':
-        await settingsBox.put(key, value);
-        break;
-    }
+  Future<void> setSettings<T>({required String key, required T value}) async {
+    await settingsBox.put(key, value);
   }
 
-  T? getSettings<T>({
-    required String boxName,
-    required String key,
-  }) {
-    switch (boxName) {
-      case 'settingsBox':
-        return settingsBox.get(key);
-
-      default:
-        return null;
-    }
+  T? getSettings<T>({required String key}) {
+    return settingsBox.get(key);
   }
 }
