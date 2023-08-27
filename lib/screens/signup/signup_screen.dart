@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:new_app/utils/shared_methods.dart';
 
 import 'package:new_app/screens/signup/signup_bloc.dart';
+import 'package:new_app/shared_widget/auth_button.dart';
+import 'package:new_app/shared_widget/custom_field.dart';
 
 import '../expenses/expenses_screen.dart';
-import '../login/shared_widgets.dart';
-import '../../services/exception_handler.dart';
+import '../../utils/exception_handler.dart';
 
-class SignupScreen extends StatefulWidget {
+class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
-}
-
-class _SignupScreenState extends State<SignupScreen> {
-  SignUpBloc signUpBloc = SignUpBloc();
-
-  @override
   Widget build(BuildContext context) {
+    SignUpBloc bloc = SignUpBloc();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.black,
@@ -26,35 +23,26 @@ class _SignupScreenState extends State<SignupScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
-          key: signUpBloc.formKey,
+          key: bloc.formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              customTextField(
-                  controller: signUpBloc.emailController,
-                  text: 'Email',
-                  isPassword: false,
-                  icon: Icons.email),
+              CustomTextField(controller: bloc.emailController, text: 'Email', isPassword: false, icon: Icons.email),
               const SizedBox(height: 16),
-              customTextField(
-                  controller: signUpBloc.passwordController,
-                  text: 'Password',
-                  isPassword: true,
-                  icon: Icons.lock),
+              CustomTextField(
+                  controller: bloc.passwordController, text: 'Password', isPassword: true, icon: Icons.lock),
               const SizedBox(height: 16),
               TextFormField(
-                controller: signUpBloc.passwordControllerconfirm,
+                controller: bloc.passwordControllerconfirm,
                 validator: (value) {
-                  if ((value?.isEmpty ?? true) ||
-                      value != signUpBloc.passwordController.text) {
+                  if ((value?.isEmpty ?? true) || value != bloc.passwordController.text) {
                     return 'Passwords are not matched!';
                   } else {
                     return null;
                   }
                 },
                 decoration: InputDecoration(
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20)),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                   labelText: 'Confirm Password',
                   prefixIcon: const Icon(Icons.lock),
                 ),
@@ -62,22 +50,19 @@ class _SignupScreenState extends State<SignupScreen> {
                 obscureText: true,
               ),
               const SizedBox(height: 24),
-              authButton(
-                context: context,
+              AuthButton(
                 type: 'Register',
-                onClicked: () async {
-                  if (!signUpBloc.formKey.currentState!.validate()) {
+                onClicked: () {
+                  if (!bloc.formKey.currentState!.validate()) {
                     return;
                   } else {
-                    signUpBloc.register().then((value) {
+                    bloc.register().then((value) {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => const ExpensesScreen()),
+                        MaterialPageRoute(builder: (context) => const ExpensesScreen()),
                       );
                     }).catchError((onError) {
-                      showToast(AuthExceptionHandler.generateExceptionMessage(
-                          onError));
+                      SharedMethod().showToast(AuthExceptionHandler.generateExceptionMessage(onError));
                     });
                   }
                 },

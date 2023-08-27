@@ -63,7 +63,6 @@ class MainAppState extends State<MainApp> {
 
   void rebuild() {
     var appLanguage = locator<HiveService>().getSettings<String>(
-          boxName: 'settingsBox',
           key: 'language',
         ) ??
         "English";

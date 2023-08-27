@@ -12,7 +12,6 @@ class TransactionModel {
     required this.amount,
     required this.type,
     required this.category,
-    this.uniqueId,
   }) {
     uniqueId ??= const Uuid().v4();
   }
@@ -26,8 +25,7 @@ class TransactionModel {
     };
   }
 
-  factory TransactionModel.fromJson(
-      Map<String, dynamic> json, String uniqueId) {
+  factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
       desc: json['desc'],
       amount: json['amount'],

@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../services/exception_handler.dart';
+import '../../utils/exception_handler.dart';
 import '../../services/firebase_service.dart';
 import '../../services/locator.dart';
 
@@ -19,8 +19,7 @@ class LoginBloc {
 
   Future<void> login() async {
     try {
-      await firebaseService.signIn(
-          emailController.text, passwordController.text);
+      await firebaseService.signIn(emailController.text, passwordController.text);
     } catch (e) {
       throw AuthExceptionHandler.handleException(e);
     }

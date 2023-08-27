@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:new_app/shared_widget/auth_button.dart';
+import 'package:new_app/shared_widget/custom_field.dart';
 
-import '../../services/exception_handler.dart';
-import '../login/shared_widgets.dart';
+import '../../utils/exception_handler.dart';
+import '../../utils/shared_methods.dart';
 import 'forgot_password_bloc.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -12,7 +14,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  ForgotPasswordBloc fbBloc = ForgotPasswordBloc();
+  ForgotPasswordBloc bloc = ForgotPasswordBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -25,38 +27,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.only(
-                top: 16,
-                right: 16,
-                left: 16,
-                bottom: MediaQuery.of(context).viewInsets.bottom),
+            padding: EdgeInsets.only(top: 16, right: 16, left: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
             child: Form(
-              key: fbBloc.formKey,
+              key: bloc.formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  customTextField(
-                      controller: fbBloc.emailController,
-                      text: 'Email',
-                      isPassword: false,
-                      icon: Icons.email),
+                  CustomTextField(
+                      controller: bloc.emailController, text: 'Email', isPassword: false, icon: Icons.email),
                   const SizedBox(height: 24),
-                  authButton(
-                    context: context,
+                  AuthButton(
                     type: 'Send reset password email',
                     onClicked: () async {
-                      if (!fbBloc.formKey.currentState!.validate()) {
+                      if (!bloc.formKey.currentState!.validate()) {
                         return;
                       } else {
-                        fbBloc
-                            .resetPassword(fbBloc.emailController.text)
-                            .then((value) {
-                          showToast(
-                              'You should receive reset password email within seconds!');
+                        bloc.resetPassword(bloc.emailController.text).then((value) {
+                          SharedMethod().showToast('You should receive reset password email within seconds!');
                         }).catchError((onError) {
-                          showToast(
-                              AuthExceptionHandler.generateExceptionMessage(
-                                  onError));
+                          SharedMethod().showToast(AuthExceptionHandler.generateExceptionMessage(onError));
                         });
                       }
                     },

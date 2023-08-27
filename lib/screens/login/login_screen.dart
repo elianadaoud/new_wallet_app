@@ -4,21 +4,21 @@ import 'package:new_app/screens/expenses/expenses_screen.dart';
 import 'package:new_app/screens/forgot_password/forgot_password_screen.dart';
 import 'package:new_app/screens/login/login_bloc.dart';
 import 'package:new_app/screens/signup/signup_screen.dart';
+import 'package:new_app/shared_widget/auth_button.dart';
+import 'package:new_app/shared_widget/custom_field.dart';
+import 'package:new_app/utils/exception_handler.dart';
 
-import 'shared_widgets.dart';
-import '../../services/exception_handler.dart';
+import '../../utils/shared_methods.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({
-    super.key,
-  });
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  LoginBloc loginBloc = LoginBloc();
+  LoginBloc bloc = LoginBloc();
 
   @override
   Widget build(BuildContext context) {
@@ -28,36 +28,37 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            logoWidget('assets/wallet_icon.png'),
+            Image.asset(
+              'assets/wallet_icon.png',
+              fit: BoxFit.fitWidth,
+              height: 175,
+              width: 175,
+            ),
             const SizedBox(
               height: 20,
             ),
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: Form(
-                  child: customTextField(
-                      controller: loginBloc.emailController,
-                      text: 'Email',
-                      isPassword: false,
-                      icon: Icons.email),
+                  child: CustomTextField(
+                      controller: bloc.emailController, text: 'Email', isPassword: false, icon: Icons.email),
                 )),
             Padding(
                 padding: const EdgeInsets.all(10),
                 child: ValueListenableBuilder<bool>(
-                    valueListenable: loginBloc.passwordNotifier,
+                    valueListenable: bloc.passwordNotifier,
                     builder: (context, isPasswordVisable, child) {
                       return TextFormField(
-                        controller: loginBloc.passwordController,
+                        controller: bloc.passwordController,
                         obscureText: isPasswordVisable,
                         decoration: InputDecoration(
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20)),
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
                             labelText: 'Password',
                             prefixIcon: const Icon(Icons.lock),
                             hintText: 'Enter secure password',
                             suffix: InkWell(
                               onTap: () {
-                                loginBloc.togglePasswordVisibility();
+                                bloc.togglePasswordVisibility();
                               },
                               child: Text(
                                 isPasswordVisable ? "Hide" : "show",
@@ -65,19 +66,16 @@ class _LoginScreenState extends State<LoginScreen> {
                             )),
                       );
                     })),
-            authButton(
-              context: context,
+            AuthButton(
               type: 'Login',
               onClicked: () {
-                loginBloc.login().then((value) {
+                bloc.login().then((value) {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const ExpensesScreen()),
+                    MaterialPageRoute(builder: (context) => const ExpensesScreen()),
                   );
                 }).catchError((onError) {
-                  showToast(
-                      AuthExceptionHandler.generateExceptionMessage(onError));
+                  SharedMethod().showToast(AuthExceptionHandler.generateExceptionMessage(onError));
                 });
               },
             ),
@@ -86,10 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ForgotPasswordScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()));
               },
               child: const Text(
                 'Forgot Password?',
@@ -107,10 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
               },
               child: const Text(
                 'New User? Register',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 15,
-                    decoration: TextDecoration.underline),
+                style: TextStyle(color: Colors.black, fontSize: 15, decoration: TextDecoration.underline),
               ),
             ),
           ],
