@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               bloc.togglePasswordVisibility();
                             },
                             child: Text(
-                              isPasswordVisable ? "Hide" : "show",
+                              isPasswordVisable ? "Show" : "Hide",
                             ),
                           )),
                     );
