@@ -37,7 +37,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   bloc.add(
                       selectedCategory,
                       TransactionModel(
-                          desc: value.desc, amount: value.amount, type: value.type, category: value.category));
+                          desc: value.desc,
+                          amount: value.amount,
+                          type: value.type,
+                          category: value.category));
                 },
               );
             }),
@@ -52,7 +55,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const SettingsScreen()),
                   ).then((result) {
                     setState(() {});
                   });
@@ -73,34 +77,51 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   children: [
                     Wallet(
                       theme: currentTheme,
-                      income: bloc.calculateIncomeOutcome('Income', transactionsSnapshot.data!.values.toList()),
-                      outcome: bloc.calculateIncomeOutcome('Outcome', transactionsSnapshot.data!.values.toList()),
-                      pieMap: bloc.getCategoryOccurrences(transactionsSnapshot.data!.values.toList()),
+                      income: bloc.calculateIncomeOutcome(
+                          'Income', transactionsSnapshot.data!.values.toList()),
+                      outcome: bloc.calculateIncomeOutcome('Outcome',
+                          transactionsSnapshot.data!.values.toList()),
+                      pieMap: bloc.getCategoryOccurrences(
+                          transactionsSnapshot.data!.values.toList()),
                     ),
                     StreamBuilder(
-                        stream: bloc.firebaseService.categoriesCollection.snapshots(),
-                        builder: (context, AsyncSnapshot<QuerySnapshot> categoryStreamSnapshot) {
+                        stream: bloc.firebaseService.categoriesCollection
+                            .snapshots(),
+                        builder: (context,
+                            AsyncSnapshot<QuerySnapshot>
+                                categoryStreamSnapshot) {
                           return SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: <Widget>[
+                                const SizedBox(
+                                  width: 10,
+                                ),
                                 SizedBox(
-                                  height: 50,
+                                  height: 36,
                                   child: ElevatedButton.icon(
                                       icon: Icon(
-                                        const IconData(59956, fontFamily: 'MaterialIcons'),
-                                        color: (selectedCategory == "All" ? Colors.white : currentTheme),
+                                        const IconData(59956,
+                                            fontFamily: 'MaterialIcons'),
+                                        color: (selectedCategory == "All"
+                                            ? Colors.white
+                                            : currentTheme),
                                       ),
                                       label: Text(
                                         "All",
                                         style: TextStyle(
-                                          color: (selectedCategory == "All" ? Colors.white : currentTheme),
+                                          color: (selectedCategory == "All"
+                                              ? Colors.white
+                                              : currentTheme),
                                         ),
                                       ),
                                       style: ButtonStyle(
-                                        backgroundColor: MaterialStateProperty.all(
-                                          selectedCategory == "All" ? currentTheme : Colors.white,
+                                        backgroundColor:
+                                            MaterialStateProperty.all(
+                                          selectedCategory == "All"
+                                              ? currentTheme
+                                              : Colors.white,
                                         ),
                                       ),
                                       onPressed: () {
@@ -113,83 +134,119 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                   SizedBox(
                                     height: 50,
                                     child: ListView.builder(
-                                        itemCount: categoryStreamSnapshot.data?.docs.length,
+                                        itemCount: categoryStreamSnapshot
+                                            .data?.docs.length,
                                         shrinkWrap: true,
                                         scrollDirection: Axis.horizontal,
                                         itemBuilder: (context, index) {
-                                          final DocumentSnapshot documentSnapshot =
-                                              categoryStreamSnapshot.data!.docs[index];
+                                          final DocumentSnapshot
+                                              documentSnapshot =
+                                              categoryStreamSnapshot
+                                                  .data!.docs[index];
 
-                                          return ElevatedButton.icon(
-                                              icon: Icon(
-                                                IconData(documentSnapshot['icon'], fontFamily: 'MaterialIcons'),
-                                                color: (selectedCategory == documentSnapshot['name']
-                                                    ? Colors.white
-                                                    : currentTheme),
+                                          return Row(
+                                            children: [
+                                              const SizedBox(
+                                                width: 10,
                                               ),
-                                              label: Text(
-                                                documentSnapshot['name'],
-                                                style: TextStyle(
-                                                  color: (selectedCategory == documentSnapshot['name']
-                                                      ? Colors.white
-                                                      : currentTheme),
-                                                ),
-                                              ),
-                                              style: ButtonStyle(
-                                                backgroundColor: MaterialStateProperty.all(
-                                                  selectedCategory == documentSnapshot['name']
-                                                      ? currentTheme
-                                                      : Colors.white,
-                                                ),
-                                              ),
-                                              onPressed: () {
-                                                selectedCategory = documentSnapshot['name'];
+                                              ElevatedButton.icon(
+                                                  icon: Icon(
+                                                    IconData(
+                                                        documentSnapshot[
+                                                            'icon'],
+                                                        fontFamily:
+                                                            'MaterialIcons'),
+                                                    color: (selectedCategory ==
+                                                            documentSnapshot[
+                                                                'name']
+                                                        ? Colors.white
+                                                        : currentTheme),
+                                                  ),
+                                                  label: Text(
+                                                    documentSnapshot['name'],
+                                                    style: TextStyle(
+                                                      color: (selectedCategory ==
+                                                              documentSnapshot[
+                                                                  'name']
+                                                          ? Colors.white
+                                                          : currentTheme),
+                                                    ),
+                                                  ),
+                                                  style: ButtonStyle(
+                                                    backgroundColor:
+                                                        MaterialStateProperty
+                                                            .all(
+                                                      selectedCategory ==
+                                                              documentSnapshot[
+                                                                  'name']
+                                                          ? currentTheme
+                                                          : Colors.white,
+                                                    ),
+                                                  ),
+                                                  onPressed: () {
+                                                    selectedCategory =
+                                                        documentSnapshot[
+                                                            'name'];
 
-                                                bloc.fillFilterdList(selectedCategory);
-                                              });
+                                                    bloc.fillFilterdList(
+                                                        selectedCategory);
+                                                  }),
+                                            ],
+                                          );
                                         }),
-                                  )
+                                  ),
                               ],
                             ),
                           );
                         }),
-                    (transactionsSnapshot.data!.isNotEmpty || transactionsSnapshot.data != null)
+                    (transactionsSnapshot.data!.isNotEmpty ||
+                            transactionsSnapshot.data != null)
                         ? Flexible(
                             child: ListView.builder(
                                 itemCount: transactionsSnapshot.data!.length,
                                 itemBuilder: (context, index) {
-                                  String key = transactionsSnapshot.data!.keys.elementAt(index);
-                                  TransactionModel? transaction = transactionsSnapshot.data![key];
+                                  String key = transactionsSnapshot.data!.keys
+                                      .elementAt(index);
+                                  TransactionModel? transaction =
+                                      transactionsSnapshot.data![key];
                                   return Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
                                       height: 60,
-                                      decoration:
-                                          BoxDecoration(borderRadius: BorderRadius.circular(12), color: currentTheme),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: currentTheme),
                                       child: Row(
                                         children: [
                                           transaction!.type == 'Outcome'
                                               ? const Icon(Icons.arrow_upward)
-                                              : const Icon(Icons.arrow_downward),
+                                              : const Icon(
+                                                  Icons.arrow_downward),
                                           transaction.type == 'Income'
-                                              ? Text('Income ${transaction.amount}')
-                                              : Text('Outcome ${transaction.amount}'),
+                                              ? Text(
+                                                  'Income ${transaction.amount}')
+                                              : Text(
+                                                  'Outcome ${transaction.amount}'),
                                           const SizedBox(width: 25),
                                           Expanded(
                                             child: Column(
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                               children: [
                                                 Text(
                                                   textAlign: TextAlign.center,
                                                   transaction.category,
                                                   softWrap: true,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                                 Text(
                                                   textAlign: TextAlign.center,
                                                   transaction.desc,
                                                   softWrap: true,
-                                                  overflow: TextOverflow.ellipsis,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               ],
                                             ),
@@ -201,7 +258,10 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                                   ctx: context,
                                                   trans: transaction,
                                                   onClicked: (value) async {
-                                                    bloc.update(selectedCategory, key, value);
+                                                    bloc.update(
+                                                        selectedCategory,
+                                                        key,
+                                                        value);
                                                   },
                                                 );
                                               },
@@ -209,7 +269,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                                           IconButton(
                                               iconSize: 15,
                                               onPressed: () {
-                                                deleteAlert(key, context, bloc, selectedCategory);
+                                                deleteAlert(key, context, bloc,
+                                                    selectedCategory);
                                               },
                                               icon: const Icon(Icons.delete))
                                         ],
@@ -230,7 +291,8 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             }));
   }
 
-  deleteAlert(var docTrans, BuildContext context, ExpensesBloc bloc, String selectedCategory) {
+  deleteAlert(var docTrans, BuildContext context, ExpensesBloc bloc,
+      String selectedCategory) {
     return showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -260,16 +322,20 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: const Text('Cancel', style: TextStyle(color: Colors.teal)))
+                  child: const Text('Cancel',
+                      style: TextStyle(color: Colors.teal)))
             ],
           );
         });
   }
 
   showBottomSheetMethod(
-      {required BuildContext ctx, final TransactionModel? trans, required Function(TransactionModel) onClicked}) {
+      {required BuildContext ctx,
+      final TransactionModel? trans,
+      required Function(TransactionModel) onClicked}) {
     showModalBottomSheet(
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25.0))),
         isScrollControlled: true,
         elevation: 10,
         backgroundColor: Colors.white,

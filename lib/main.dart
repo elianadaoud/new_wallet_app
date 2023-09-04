@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
+import 'package:new_app/screens/expenses/expenses_screen.dart';
 
 import 'package:new_app/services/hive_db_service.dart';
 
@@ -58,7 +59,7 @@ class MainAppState extends State<MainApp> {
         ],
         supportedLocales: [Locale(locale ?? "en")],
         debugShowCheckedModeBanner: false,
-        home: const LoginScreen());
+        home: const ExpensesScreen());
   }
 
   void rebuild() {

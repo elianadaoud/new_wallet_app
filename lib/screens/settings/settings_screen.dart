@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:new_app/main.dart';
 import 'package:new_app/screens/login/login_screen.dart';
 import 'package:new_app/screens/settings/settings_bloc.dart';
+import 'package:localization/localization.dart';
 
 import '../../services/hive_db_service.dart';
 import '../../services/locator.dart';
@@ -29,18 +30,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: Text("settings-text".i18n()),
         backgroundColor: currentTheme,
         elevation: 10,
         actions: [
           TextButton(
               onPressed: () {
                 FirebaseAuth.instance.signOut();
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()));
               },
-              child: const Text(
-                'Logout',
-                style: TextStyle(color: Colors.black),
+              child: Text(
+                "logout-text".i18n(),
+                style: const TextStyle(color: Colors.black),
               ))
         ],
       ),
@@ -51,13 +55,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             GestureDetector(
               onTap: () {
-                showSettingsBottomSheet(context, ['English', 'Arabic', 'Russian'], () {
+                showSettingsBottomSheet(
+                    context, ['English', 'Arabic', 'Russian'], () {
                   setState(() {});
                 });
               },
-              child: const Text(
-                'Change language',
-                style: TextStyle(fontSize: 25),
+              child: Text(
+                "change-language-text".i18n(),
+                style: const TextStyle(fontSize: 25),
               ),
             ),
             const Divider(),
@@ -67,9 +72,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   setState(() {});
                 });
               },
-              child: const Text(
-                'Change theme',
-                style: TextStyle(fontSize: 25),
+              child: Text(
+                "change-theme-text".i18n(),
+                style: const TextStyle(fontSize: 25),
               ),
             ),
             const Divider()
@@ -80,7 +85,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     // });
   }
 
-  void showSettingsBottomSheet(BuildContext context, List<String> options, Function() onSelect) {
+  void showSettingsBottomSheet(
+      BuildContext context, List<String> options, Function() onSelect) {
     showModalBottomSheet<void>(
         context: context,
         builder: (BuildContext context) {
@@ -101,7 +107,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           activeColor: Colors.teal,
                           title: Text(options[index]),
                           value: options[index],
-                          groupValue: options.contains('English') ? bloc.language : bloc.theme,
+                          groupValue: options.contains('English')
+                              ? bloc.language
+                              : bloc.theme,
                           onChanged: (value) {
                             if (options.contains('English')) {
                               setState(
@@ -123,10 +131,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   TextButton(
                       onPressed: () async {
                         if (options.contains('English')) {
-                          await locator<HiveService>().setSettings(key: 'language', value: bloc.language);
+                          await locator<HiveService>().setSettings(
+                              key: 'language', value: bloc.language);
                           if (context.mounted) MainApp.of(context)?.rebuild();
                         } else {
-                          locator<HiveService>().setSettings(key: 'theme', value: bloc.theme);
+                          locator<HiveService>()
+                              .setSettings(key: 'theme', value: bloc.theme);
                           // bloc.themeStreamController.sink.add(bloc.theme);
                           onSelect();
                         }

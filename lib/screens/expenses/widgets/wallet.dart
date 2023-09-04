@@ -36,7 +36,7 @@ class Wallet extends StatelessWidget {
                 Text(
                   '${"account-balance-text".i18n()} ${income - outcome} ${"currency-jo-text".i18n()}',
                   style: const TextStyle(
-                      fontSize: 10, fontWeight: FontWeight.bold),
+                      fontSize: 15, fontWeight: FontWeight.bold),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -44,7 +44,7 @@ class Wallet extends StatelessWidget {
                     Text(
                       ' ${"income-text".i18n()} \n $income ${"currency-jo-text".i18n()}',
                       style: const TextStyle(
-                          fontSize: 10, fontWeight: FontWeight.bold),
+                          fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                     if (pieMap != null && pieMap!.isNotEmpty)
                       Expanded(
@@ -68,7 +68,7 @@ class Wallet extends StatelessWidget {
                     Text(
                       ' ${"outcome-text".i18n()} \n $outcome ${"currency-jo-text".i18n()}',
                       style: const TextStyle(
-                          fontSize: 10, fontWeight: FontWeight.bold),
+                          fontSize: 15, fontWeight: FontWeight.bold),
                     ),
                   ],
                 )

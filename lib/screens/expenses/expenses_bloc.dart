@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/hive_db_service.dart';
@@ -10,13 +11,12 @@ import '../../models/transactions.dart';
 import '../../services/firebase_service.dart';
 
 class ExpensesBloc {
-  final filteredListController = StreamController<Map<String, TransactionModel>>();
+  final filteredListController =
+      StreamController<Map<String, TransactionModel>>();
   final FirebaseService firebaseService = locator<FirebaseService>();
 
-  List<TransactionModel> myExpenses = [];
-  List<TransactionModel> filteredList = [];
-
-  double calculateIncomeOutcome(String type, List<TransactionModel> transactions) {
+  double calculateIncomeOutcome(
+      String type, List<TransactionModel> transactions) {
     double totalMoney = 0;
 
     for (var expense in transactions) {
@@ -28,7 +28,8 @@ class ExpensesBloc {
     return totalMoney;
   }
 
-  Map<String, double> getCategoryOccurrences(List<TransactionModel> transactions) {
+  Map<String, double> getCategoryOccurrences(
+      List<TransactionModel> transactions) {
     Map<String, double> dataMap = {};
 
     for (TransactionModel transaction in transactions) {
@@ -42,16 +43,20 @@ class ExpensesBloc {
   void fillFilterdList(String selectedCategory) {
     String userId = firebaseService.firebaseAuth.currentUser?.uid ?? "";
 
-    CollectionReference userTransactions =
-        firebaseService.firebaseStore.collection('transactions').doc(userId).collection('userTransactions');
+    CollectionReference userTransactions = firebaseService.firebaseStore
+        .collection('transactions')
+        .doc(userId)
+        .collection('userTransactions');
 
     Stream<QuerySnapshot<Map<String, dynamic>>>? transactionStream;
 
     if (selectedCategory == 'All') {
-      transactionStream = userTransactions.snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>?;
-    } else {
-      transactionStream = userTransactions.where('category', isEqualTo: selectedCategory).snapshots()
+      transactionStream = userTransactions.snapshots()
           as Stream<QuerySnapshot<Map<String, dynamic>>>?;
+    } else {
+      transactionStream = userTransactions
+          .where('category', isEqualTo: selectedCategory)
+          .snapshots() as Stream<QuerySnapshot<Map<String, dynamic>>>?;
     }
 
     transactionStream!.listen((snapshot) {
@@ -65,12 +70,15 @@ class ExpensesBloc {
 
       filteredListController.sink.add(transactionMap);
     }, onError: (error) {
-      print("Error retrieving transactions: $error");
+      if (kDebugMode) {
+        print("Error retrieving transactions: $error");
+      }
     });
   }
 
   Color getThemeColor() {
-    var currentTheme = locator<HiveService>().getSettings(key: 'theme') ?? 'Red';
+    var currentTheme =
+        locator<HiveService>().getSettings(key: 'theme') ?? 'Red';
 
     switch (currentTheme) {
       case 'Red':
@@ -86,12 +94,15 @@ class ExpensesBloc {
 
   add(String selectedCategory, TransactionModel model) {
     firebaseService.addTransaction(
-        transactionData: model, collectionName: 'transactions', userTransactions: 'userTransactions');
+        transactionData: model,
+        collectionName: 'transactions',
+        userTransactions: 'userTransactions');
 
     fillFilterdList(selectedCategory);
   }
 
-  update(String selectedCategory, String transactionId, TransactionModel updatedData) {
+  update(String selectedCategory, String transactionId,
+      TransactionModel updatedData) {
     firebaseService.updateTransaction(
       transactionId: transactionId,
       updatedData: updatedData,
